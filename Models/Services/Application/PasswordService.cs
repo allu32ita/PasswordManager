@@ -20,5 +20,15 @@ namespace PasswordManager.Models.Services.Application
             }
             return ListaPass;
         }
+        public PasswordDetailViewModel GetPassword(string id)
+        {
+            var pass = new PasswordDetailViewModel();
+            pass.id = Convert.ToInt32(id);
+            pass.decrizioneEstesa = "descrizione estesa del id " + id;
+            pass.descrizione = "Password numero " + id;
+            pass.sito = "Sito numero " + id;
+            pass.tipo = "Pass";   
+            return pass;
+        }
     }
 }
