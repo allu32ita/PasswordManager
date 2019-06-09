@@ -2,6 +2,7 @@
 
 @foreach(PasswordViewModel pass in Model)
 {
+<hr>
 <div class="row">
     <div class="col-md-1">
          @pass.id
@@ -12,8 +13,8 @@
     <div class="col-md-4">
         @pass.sito
     </div>
-    <div class="col-md-3">
-        @pass.tipo
+    <div class="col-md-3" d-flex align-item-center>
+        <a class="btn btn-outline-primary" asp-action="detail" asp-controller="Password" asp-route-id="@pass.id">Dettaglio Password</a>
     </div>
 </div>
 }
