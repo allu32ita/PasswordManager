@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="~/Style.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand">Password Manager</a>
         <button class="navbar-toggler" data-target="#navmain" data-toggle="collapse" aria-controls="navmain" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -28,7 +28,7 @@
                     <a class="nav-link" href="#">Area Utente<span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">Lista Password<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" asp-action="index" asp-controller="Password">Lista Password<span class="sr-only">(current)</span></a>
                 </li>
             </ul>
         </div>

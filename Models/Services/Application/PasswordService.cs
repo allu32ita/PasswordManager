@@ -8,7 +8,17 @@ namespace PasswordManager.Models.Services.Application
     {
         public List<PasswordViewModel> GetPasswords()
         {
-            throw new NotImplementedException();
+            var ListaPass = new List<PasswordViewModel>();
+            for(int i = 1; i <= 20; i++)
+            {
+                var pass = new PasswordViewModel();
+                pass.id = i;
+                pass.descrizione = "Password numero " + i.ToString();
+                pass.sito = "Sito numero " + i.ToString();
+                pass.tipo = "Pass";        
+                ListaPass.Add(pass);
+            }
+            return ListaPass;
         }
     }
 }

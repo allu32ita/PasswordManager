@@ -1,1 +1,19 @@
-sono index del password controller
+@model List<PasswordViewModel>
+
+@foreach(PasswordViewModel pass in Model)
+{
+<div class="row">
+    <div class="col-md-1">
+         @pass.id
+    </div>
+    <div class="col-md-4">
+        @pass.descrizione
+    </div>
+    <div class="col-md-4">
+        @pass.sito
+    </div>
+    <div class="col-md-3">
+        @pass.tipo
+    </div>
+</div>
+}
