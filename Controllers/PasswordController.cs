@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using PasswordManager.Models.Services.Application;
+using PasswordManager.Models.ViewModels;
 
 namespace PasswordManager.Controllers
 {
@@ -8,11 +11,11 @@ namespace PasswordManager.Controllers
         public IActionResult index () 
         {
             var ListaPassword = new PasswordService();
-            ListaPassword.GetPassword();
-            return View();            
+            List<PasswordViewModel> Passwords = ListaPassword.GetPasswords();
+            return View(Passwords);            
         }
 
-        public IActionResult detail ()
+        public IActionResult detail (string id)
         {
             return View();
         }
