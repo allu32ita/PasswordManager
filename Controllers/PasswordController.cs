@@ -8,17 +8,23 @@ namespace PasswordManager.Controllers
 {
     public class PasswordController : Controller
     {
-        public IActionResult index() 
+        private readonly IPasswordService ServizioPassword;
+        public PasswordController(IPasswordService ServizioPassword)
         {
-            var ListaPassword = new PasswordService();
-            List<PasswordViewModel> Passwords = ListaPassword.GetPasswords();
-            return View(Passwords);            
+            this.ServizioPassword = ServizioPassword;
+
+        }
+        public IActionResult index()
+        {
+            List<PasswordViewModel> Passwords = ServizioPassword.GetPasswords();
+            ViewData["Title"] = "Lista Password";
+            return View(Passwords);
         }
 
         public IActionResult detail(string id)
         {
-            var ListaPassword = new PasswordService();
-            PasswordDetailViewModel Pass = ListaPassword.GetPassword(id);
+            PasswordDetailViewModel Pass = ServizioPassword.GetPassword(id);
+            ViewData["Title"] = "Dettaglio numero " + Pass.id.ToString();
             return View(Pass);
         }
     }

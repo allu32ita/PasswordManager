@@ -4,7 +4,7 @@ using PasswordManager.Models.ViewModels;
 
 namespace PasswordManager.Models.Services.Application
 {
-    public class PasswordService
+    public class PasswordService : IPasswordService
     {
         public List<PasswordViewModel> GetPasswords()
         {

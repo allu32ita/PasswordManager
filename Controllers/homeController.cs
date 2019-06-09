@@ -6,6 +6,7 @@ namespace PasswordManager.Controllers
     {
         public IActionResult index()
         {
+            ViewData["Title"] = "Home";
             return View();
         }
     }
