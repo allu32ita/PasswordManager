@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using PasswordManager.Models.Services.Application;
 
 namespace PasswordManager.Controllers
 {
@@ -6,6 +7,8 @@ namespace PasswordManager.Controllers
     {
         public IActionResult index () 
         {
+            var ListaPassword = new PasswordService();
+            ListaPassword.GetPassword();
             return View();            
         }
 
