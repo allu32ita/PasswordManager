@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using PasswordManager.Models.Services.Infrastructure;
@@ -16,15 +17,31 @@ namespace PasswordManager.Models.Services.Application
 
         public PasswordDetailViewModel GetPassword(string id)
         {
-            throw new System.NotImplementedException();
+            string query = "SELECT * FROM Passwords WHERE Id = " + id;
+            DataSet dset = db.Query(query);
+            var dtable = dset.Tables[0];
+            if (dtable.Rows.Count != 1)
+            {
+                throw new InvalidOperationException("Id non valido.");
+            }
+            var PassRow = dtable.Rows[0];
+            PasswordDetailViewModel PassDetailViewModel = PasswordDetailViewModel.FromDataRow(PassRow);
+            return PassDetailViewModel;
         }
+
 
         public List<PasswordViewModel> GetPasswords()
         {
-            var listaPsw = new List<PasswordViewModel>();
             string query = "SELECT * FROM Passwords";
             DataSet dset = db.Query(query);
-            
+            var dtable = dset.Tables[0];
+            var listaPass = new List<PasswordViewModel>();
+            foreach(DataRow passRow in dtable.Rows)
+            {
+                PasswordViewModel pass = PasswordViewModel.FromDataRow(passRow);
+                listaPass.Add(pass);
+            }
+            return listaPass;
         }
     }
 }

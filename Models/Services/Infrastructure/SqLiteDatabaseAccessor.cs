@@ -16,6 +16,7 @@ namespace PasswordManager.Models.Services.Infrastructure
                     {
                         var dset = new DataSet();
                         var dtable = new DataTable();
+                        dset.EnforceConstraints = false;
                         dset.Tables.Add(dtable);
                         dtable.Load(reader);
                         return dset;
