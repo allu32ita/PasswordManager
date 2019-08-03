@@ -12,7 +12,6 @@ namespace PasswordManager.Controllers
         public PasswordController(IPasswordService ServizioPassword)
         {
             this.ServizioPassword = ServizioPassword;
-
         }
         public IActionResult index()
         {

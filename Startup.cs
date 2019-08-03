@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using PasswordManager.Models.Services.Application;
+using PasswordManager.Models.Services.Infrastructure;
 
 namespace PasswordManager
 {
@@ -19,7 +20,8 @@ namespace PasswordManager
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddTransient<IPasswordService, PasswordService>();
+            services.AddTransient<IPasswordService, AdoNetPasswordService>();
+            services.AddTransient<IDatabaseAccessor, SqLiteDatabaseAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
