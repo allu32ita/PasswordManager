@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PasswordManager.Models.Services.Application;
 using PasswordManager.Models.ViewModels;
@@ -13,16 +14,16 @@ namespace PasswordManager.Controllers
         {
             this.ServizioPassword = ServizioPassword;
         }
-        public IActionResult index()
+        public async Task<IActionResult> index()
         {
-            List<PasswordViewModel> Passwords = ServizioPassword.GetPasswords();
+            List<PasswordViewModel> Passwords = await ServizioPassword.GetPasswordsAsync();
             ViewData["Title"] = "Lista Password";
             return View(Passwords);
         }
 
-        public IActionResult detail(string id)
+        public async Task<IActionResult> detail(string id)
         {
-            PasswordDetailViewModel Pass = ServizioPassword.GetPassword(id);
+            PasswordDetailViewModel Pass = await ServizioPassword.GetPasswordAsync(id);
             ViewData["Title"] = "Dettaglio numero " + Pass.id.ToString();
             return View(Pass);
         }

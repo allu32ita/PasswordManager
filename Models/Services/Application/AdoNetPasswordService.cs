@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using PasswordManager.Models.Services.Infrastructure;
 using PasswordManager.Models.ViewModels;
 
@@ -15,10 +16,10 @@ namespace PasswordManager.Models.Services.Application
             this.db = db;
         }
 
-        public PasswordDetailViewModel GetPassword(string id)
+        public async Task<PasswordDetailViewModel> GetPasswordAsync(string id)
         {
-            string query = "SELECT * FROM Passwords WHERE Id = " + id;
-            DataSet dset = db.Query(query);
+            FormattableString query = $"SELECT * FROM Passwords WHERE Id = {id}";
+            DataSet dset = await db.QueryAsync(query);
             var dtable = dset.Tables[0];
             if (dtable.Rows.Count != 1)
             {
@@ -30,10 +31,10 @@ namespace PasswordManager.Models.Services.Application
         }
 
 
-        public List<PasswordViewModel> GetPasswords()
+        public async Task<List<PasswordViewModel>> GetPasswordsAsync()
         {
-            string query = "SELECT * FROM Passwords";
-            DataSet dset = db.Query(query);
+            FormattableString query = $"SELECT * FROM Passwords";
+            DataSet dset = await db.QueryAsync(query);
             var dtable = dset.Tables[0];
             var listaPass = new List<PasswordViewModel>();
             foreach(DataRow passRow in dtable.Rows)
