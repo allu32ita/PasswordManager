@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace PasswordManager
 {
+    
     public class Program
     {
         
