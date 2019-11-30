@@ -2,17 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using PasswordManager.Models.Services.Infrastructure;
 using PasswordManager.Models.ViewModels;
+using PasswordManager.Models.Options;
 
 namespace PasswordManager.Models.Services.Application
 {
     public class AdoNetPasswordService : IPasswordService
     {
         private readonly IDatabaseAccessor db;
+        private readonly IOptionsMonitor<PasswordsOptions> OpzioniPassword;
 
-        public AdoNetPasswordService(IDatabaseAccessor db)
+        public AdoNetPasswordService(IDatabaseAccessor db, IOptionsMonitor<PasswordsOptions> OpzioniPassword)
         {
+            this.OpzioniPassword = OpzioniPassword;
             this.db = db;
         }
 
