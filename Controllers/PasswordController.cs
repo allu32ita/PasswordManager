@@ -10,7 +10,7 @@ namespace PasswordManager.Controllers
     public class PasswordController : Controller
     {
         private readonly IPasswordService ServizioPassword;
-        public PasswordController(IPasswordService ServizioPassword)
+        public PasswordController(ICachedPasswordService ServizioPassword)
         {
             this.ServizioPassword = ServizioPassword;
         }

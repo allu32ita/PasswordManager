@@ -6,20 +6,24 @@ using System.Linq;
 using PasswordManager.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace PasswordManager.Models.Services.Application
 {
     public class EFCorePasswordService : IPasswordService
     {
+        private readonly ILogger<AdoNetPasswordService> log;
         private readonly PasswordDbContext dbContext;
 
-        public EFCorePasswordService(PasswordDbContext dbContext)
+        public EFCorePasswordService(ILogger<AdoNetPasswordService> log, PasswordDbContext dbContext)
         {
+            this.log = log;
             this.dbContext = dbContext;
         }
 
         public async Task<PasswordDetailViewModel> GetPasswordAsync(string id)
         {
+            log.LogInformation("password {id} requested", id);
             int int_ID = Convert.ToInt32(id);
             PasswordDetailViewModel pswdet = await dbContext.Passwords.Where(Var_password => Var_password.Id == int_ID)
                                                                       .Select(Var_password => new PasswordDetailViewModel {

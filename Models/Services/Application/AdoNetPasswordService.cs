@@ -6,28 +6,34 @@ using Microsoft.Extensions.Options;
 using PasswordManager.Models.Services.Infrastructure;
 using PasswordManager.Models.ViewModels;
 using PasswordManager.Models.Options;
+using Microsoft.Extensions.Logging;
+using PasswordManager.Models.Exceptions;
 
 namespace PasswordManager.Models.Services.Application
 {
     public class AdoNetPasswordService : IPasswordService
     {
+        private readonly ILogger<AdoNetPasswordService> log;
         private readonly IDatabaseAccessor db;
         private readonly IOptionsMonitor<PasswordsOptions> OpzioniPassword;
 
-        public AdoNetPasswordService(IDatabaseAccessor db, IOptionsMonitor<PasswordsOptions> OpzioniPassword)
+        public AdoNetPasswordService(ILogger<AdoNetPasswordService> log, IDatabaseAccessor db, IOptionsMonitor<PasswordsOptions> OpzioniPassword)
         {
             this.OpzioniPassword = OpzioniPassword;
+            this.log = log;
             this.db = db;
         }
 
         public async Task<PasswordDetailViewModel> GetPasswordAsync(string id)
         {
+            log.LogInformation("password {id} requested", id);
             FormattableString query = $"SELECT * FROM Passwords WHERE Id = {id}";
             DataSet dset = await db.QueryAsync(query);
             var dtable = dset.Tables[0];
             if (dtable.Rows.Count != 1)
             {
-                throw new InvalidOperationException("Id non valido.");
+                log.LogWarning("password {id} requested", id);
+                throw new PasswordNotFoundException(Convert.ToInt32(id));
             }
             var PassRow = dtable.Rows[0];
             PasswordDetailViewModel PassDetailViewModel = PasswordDetailViewModel.FromDataRow(PassRow);

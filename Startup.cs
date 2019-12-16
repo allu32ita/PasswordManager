@@ -13,6 +13,9 @@ using PasswordManager.Models.Services.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PasswordManager.Models.Options;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 
 namespace PasswordManager
 {
@@ -29,21 +32,30 @@ namespace PasswordManager
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            //services.AddTransient<IPasswordService, AdoNetPasswordService>();
-            services.AddTransient<IPasswordService, EFCorePasswordService>();
-            //services.AddTransient<IDatabaseAccessor, SqLiteDatabaseAccessor>();
-
-            //services.AddScoped<PasswordDbContext>();
-            //services.AddDbContext<PasswordDbContext>();
+            services.AddTransient<IPasswordService, AdoNetPasswordService>();
+            //services.AddTransient<IPasswordService, EFCorePasswordService>();
+            services.AddTransient<IDatabaseAccessor, SqLiteDatabaseAccessor>();
+            //services.AddTransient<ICachedPasswordService, MemoryCachedPasswordService>(); 
+            services.AddTransient<ICachedPasswordService, DistributedCachePasswordService>(); 
+            
             services.AddDbContextPool<PasswordDbContext>(optionsBuilder => 
             {
                 String ConnectionString = Configuration.GetSection("ConnectionStrings").GetValue<String>("Default");
                 optionsBuilder.UseSqlite(ConnectionString);
             });
+            
+            services.AddStackExchangeRedisCache(options => {
+                Configuration.Bind("DistributedCache:Redis", options);
+            });
+
+            //services.AddDistributedSqlServerCache(options => {
+            //    Configuration.Bind("DistributedCache:SqlServer", options);
+            //});
 
             //Options
-            services.Configure<ConnectionStringsOptions>(Configuration.GetSection("ConnectionStrings"));
             services.Configure<PasswordsOptions>(Configuration.GetSection("Passwords"));
+            services.Configure<ConnectionStringsOptions>(Configuration.GetSection("ConnectionStrings"));
+            services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,12 +64,16 @@ namespace PasswordManager
             if (env.IsEnvironment("Development"))
             {
                 app.UseDeveloperExceptionPage();
-
                 lifetime.ApplicationStarted.Register(() => {
                     string filepath = Path.Combine(env.ContentRootPath, "bin/reload.txt");
                     File.WriteAllText(filepath, DateTime.Now.ToString());
                 });
             }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+            }
+            //app.UseExceptionHandler("/Error");
             app.UseStaticFiles();
             app.UseMvc(routebuilder => {
                 routebuilder.MapRoute("default", "{controller=home}/{action=index}/{id?}");

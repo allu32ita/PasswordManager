@@ -4,6 +4,7 @@ using System.Data;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PasswordManager.Models.Options;
 
@@ -12,16 +13,20 @@ namespace PasswordManager.Models.Services.Infrastructure
 
     public class SqLiteDatabaseAccessor : IDatabaseAccessor
     {
+        private readonly ILogger<SqLiteDatabaseAccessor> log;
+
         public IOptionsMonitor<ConnectionStringsOptions> OpzioniDiConnessione { get; }
-        public SqLiteDatabaseAccessor(IOptionsMonitor<ConnectionStringsOptions> OpzioniDiConnessione)
+        public SqLiteDatabaseAccessor(ILogger<SqLiteDatabaseAccessor> log, IOptionsMonitor<ConnectionStringsOptions> OpzioniDiConnessione)
         {
+            this.log = log;
             this.OpzioniDiConnessione = OpzioniDiConnessione;
         }
 
 
         public async Task<DataSet> QueryAsync(FormattableString formatquery)
         {
-
+            log.LogInformation(formatquery.Format, formatquery.GetArguments());
+            
             var queryArg = formatquery.GetArguments();
             var sqliteParam = new List<SqliteParameter>();
             for (int i = 0; i < queryArg.Length; i++)
