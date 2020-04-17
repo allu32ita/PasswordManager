@@ -41,9 +41,9 @@ namespace PasswordManager.Models.Services.Application
         }
 
 
-        public async Task<List<PasswordViewModel>> GetPasswordsAsync()
+        public async Task<List<PasswordViewModel>> GetPasswordsAsync(string search, int page, string orderby, bool ascending)
         {
-            FormattableString query = $"SELECT * FROM Passwords";
+            FormattableString query = $"SELECT * FROM Passwords where Descrizione LIKE {"%" + search + "%"}";
             DataSet dset = await db.QueryAsync(query);
             var dtable = dset.Tables[0];
             var listaPass = new List<PasswordViewModel>();

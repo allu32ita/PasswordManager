@@ -26,12 +26,12 @@ namespace PasswordManager.Models.Services.Application
             });
         }
 
-        public Task<List<PasswordViewModel>> GetPasswordsAsync()
+        public Task<List<PasswordViewModel>> GetPasswordsAsync(string search, int page, string orderby, bool ascending)
         {
-            return memoryChache.GetOrCreateAsync($"Passwords", cacheEntry => {
+            return memoryChache.GetOrCreateAsync($"Passwords{search} = {page} = {orderby} = {ascending}", cacheEntry => {
                 cacheEntry.SetSize(2);
                 cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
-                return passwordService.GetPasswordsAsync();
+                return passwordService.GetPasswordsAsync(search, page, orderby, ascending);
             });
         }
     }

@@ -31,15 +31,22 @@ namespace PasswordManager
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddResponseCaching();
+            services.AddMvc(options => {
+                var HomeProfile = new CacheProfile();
+                //HomeProfile.Duration = Configuration.GetValue<int>("ResponseCache:Home:Duration");
+                //HomeProfile.Location = Configuration.GetValue<ResponseCacheLocation>("ResponseCache:Home:Location");
+                //HomeProfile.VaryByQueryKeys = new string[] {"page"};
+                Configuration.Bind("ResponseCache:Home", HomeProfile);
+                options.CacheProfiles.Add("Home", HomeProfile);
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddTransient<IPasswordService, AdoNetPasswordService>();
             //services.AddTransient<IPasswordService, EFCorePasswordService>();
             services.AddTransient<IDatabaseAccessor, SqLiteDatabaseAccessor>();
             //services.AddTransient<ICachedPasswordService, MemoryCachedPasswordService>(); 
             services.AddTransient<ICachedPasswordService, DistributedCachePasswordService>(); 
             
-            services.AddDbContextPool<PasswordDbContext>(optionsBuilder => 
-            {
+            services.AddDbContextPool<PasswordDbContext>(optionsBuilder => {
                 String ConnectionString = Configuration.GetSection("ConnectionStrings").GetValue<String>("Default");
                 optionsBuilder.UseSqlite(ConnectionString);
             });
@@ -52,10 +59,12 @@ namespace PasswordManager
             //    Configuration.Bind("DistributedCache:SqlServer", options);
             //});
 
+            //services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));
+
             //Options
             services.Configure<PasswordsOptions>(Configuration.GetSection("Passwords"));
             services.Configure<ConnectionStringsOptions>(Configuration.GetSection("ConnectionStrings"));
-            services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,6 +84,8 @@ namespace PasswordManager
             }
             //app.UseExceptionHandler("/Error");
             app.UseStaticFiles();
+
+            app.UseResponseCaching();
             app.UseMvc(routebuilder => {
                 routebuilder.MapRoute("default", "{controller=home}/{action=index}/{id?}");
             });

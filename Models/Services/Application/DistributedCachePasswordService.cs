@@ -34,18 +34,18 @@ namespace PasswordManager.Models.Services.Application
             return psw;
         }
 
-        public async Task<List<PasswordViewModel>> GetPasswordsAsync()
+        public async Task<List<PasswordViewModel>> GetPasswordsAsync(string search, int page, string orderby, bool ascending)
         {
-            string key = $"Passwords";
+            string key = $"Passwords{search} = {page} = {orderby} = {ascending}";
             string serializedObject = await distributedCache.GetStringAsync(key);
             if (serializedObject != null) {
                 return Deserialize<List<PasswordViewModel>>(serializedObject);
             }
-            List<PasswordViewModel> listpsw = await passwordService.GetPasswordsAsync();
+            List<PasswordViewModel> listpsw = await passwordService.GetPasswordsAsync(search, page, orderby, ascending);
             serializedObject = Serialize(listpsw);
 
             var cacheOptions = new DistributedCacheEntryOptions();
-            cacheOptions.SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
+            cacheOptions.SetAbsoluteExpiration(TimeSpan.FromSeconds(1));
 
             await distributedCache.SetStringAsync(key, serializedObject, cacheOptions);
             return listpsw;

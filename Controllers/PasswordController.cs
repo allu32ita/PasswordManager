@@ -14,9 +14,9 @@ namespace PasswordManager.Controllers
         {
             this.ServizioPassword = ServizioPassword;
         }
-        public async Task<IActionResult> index()
+        public async Task<IActionResult> index(string search, int page, string orderby, bool ascending)
         {
-            List<PasswordViewModel> Passwords = await ServizioPassword.GetPasswordsAsync();
+            List<PasswordViewModel> Passwords = await ServizioPassword.GetPasswordsAsync(search, page, orderby, ascending);
             ViewData["Title"] = "Lista Password";
             return View(Passwords);
         }

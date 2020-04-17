@@ -37,9 +37,11 @@ namespace PasswordManager.Models.Services.Application
             return pswdet;
         }
 
-        public async Task<List<PasswordViewModel>> GetPasswordsAsync()
+        public async Task<List<PasswordViewModel>> GetPasswordsAsync(string search, int page, string orderby, bool ascending)
         {
+            search = search ?? "";
             IQueryable<PasswordViewModel> Qry_listapsw = dbContext.Passwords
+            .Where(Var_password => Var_password.Descrizione.Contains(search))
             .AsNoTracking()
             .Select(Var_password => new PasswordViewModel {
                 id = Var_password.Id,
