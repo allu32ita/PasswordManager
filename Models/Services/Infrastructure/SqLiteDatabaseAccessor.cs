@@ -31,6 +31,10 @@ namespace PasswordManager.Models.Services.Infrastructure
             var sqliteParam = new List<SqliteParameter>();
             for (int i = 0; i < queryArg.Length; i++)
             {
+                if (queryArg[i] is Sql)
+                {
+                    continue;
+                }
                 var param = new SqliteParameter(i.ToString(), queryArg[i]);
                 sqliteParam.Add(param);
                 queryArg[i] = "@" + i;

@@ -12,7 +12,7 @@ namespace PasswordManager.Models.Options
 
         public long PerPage { get; set; }
 
-        public PasswordsOrderOptions Orinamento { get; set; }
+        public PasswordsOrderOptions Order { get; set; }
     }
 
     public partial class PasswordsOrderOptions

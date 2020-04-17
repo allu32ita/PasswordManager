@@ -30,7 +30,7 @@ namespace PasswordManager.Models.Services.Application
         {
             return memoryChache.GetOrCreateAsync($"Passwords{search} = {page} = {orderby} = {ascending}", cacheEntry => {
                 cacheEntry.SetSize(2);
-                cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
+                cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(1));
                 return passwordService.GetPasswordsAsync(search, page, orderby, ascending);
             });
         }
