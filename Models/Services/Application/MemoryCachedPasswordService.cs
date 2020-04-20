@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using PasswordManager.Models.InputModels;
 using PasswordManager.Models.ViewModels;
 
 namespace PasswordManager.Models.Services.Application
@@ -26,13 +27,18 @@ namespace PasswordManager.Models.Services.Application
             });
         }
 
-        public Task<List<PasswordViewModel>> GetPasswordsAsync(string search, int page, string orderby, bool ascending)
+        public Task<List<PasswordViewModel>> GetPasswordsAsync(PasswordListInputModel model)
         {
-            return memoryChache.GetOrCreateAsync($"Passwords{search} = {page} = {orderby} = {ascending}", cacheEntry => {
-                cacheEntry.SetSize(2);
-                cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(1));
-                return passwordService.GetPasswordsAsync(search, page, orderby, ascending);
-            });
+            bool canCache = model.Page <= 5 && string.IsNullOrEmpty(model.Search);
+            if (canCache)
+            {
+                return memoryChache.GetOrCreateAsync($"Passwords{model.Page} = {model.Orderby} = {model.Ascending}", cacheEntry => {
+                    cacheEntry.SetSize(2);
+                    cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(1));
+                    return passwordService.GetPasswordsAsync(model);
+                });
+            }
+            return passwordService.GetPasswordsAsync(model);
         }
     }
 }

@@ -9,6 +9,7 @@ using PasswordManager.Models.Options;
 using Microsoft.Extensions.Logging;
 using PasswordManager.Models.Exceptions;
 using System.Linq;
+using PasswordManager.Models.InputModels;
 
 namespace PasswordManager.Models.Services.Application
 {
@@ -42,21 +43,10 @@ namespace PasswordManager.Models.Services.Application
         }
 
 
-        public async Task<List<PasswordViewModel>> GetPasswordsAsync(string search, int page, string orderby, bool ascending)
+        public async Task<List<PasswordViewModel>> GetPasswordsAsync(PasswordListInputModel model)
         {
-            page = Math.Max(1, page);
-            int limit = (int)OpzioniPassword.CurrentValue.PerPage;
-            int offset = (page - 1) * limit;
-            
-            var OpzioniOrdinamento = OpzioniPassword.CurrentValue.Order; 
-
-            if (!OpzioniOrdinamento.Allow.Contains(orderby))
-            {
-                orderby = OpzioniOrdinamento.By;
-                ascending = OpzioniOrdinamento.Ascending;
-            }
-            string direction = ascending ? "ASC" : "DESC";
-            FormattableString query = $"SELECT * FROM Passwords where Descrizione LIKE {"%" + search + "%"} ORDER BY {(Sql) orderby} {(Sql) direction} LIMIT {limit} OFFSET {offset}";
+            string direction = model.Ascending ? "ASC" : "DESC";
+            FormattableString query = $"SELECT * FROM Passwords where Descrizione LIKE {"%" + model.Search + "%"} ORDER BY {(Sql) model.Orderby} {(Sql) direction} LIMIT {model.Limit} OFFSET {model.Offset}";
             DataSet dset = await db.QueryAsync(query);
             var dtable = dset.Tables[0];
             var listaPass = new List<PasswordViewModel>();

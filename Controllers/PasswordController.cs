@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using PasswordManager.Models.InputModels;
 using PasswordManager.Models.Services.Application;
 using PasswordManager.Models.ViewModels;
 
@@ -14,9 +15,9 @@ namespace PasswordManager.Controllers
         {
             this.ServizioPassword = ServizioPassword;
         }
-        public async Task<IActionResult> index(string search, int page, string orderby, bool ascending)
+        public async Task<IActionResult> index(PasswordListInputModel model)
         {
-            List<PasswordViewModel> Passwords = await ServizioPassword.GetPasswordsAsync(search, page, orderby, ascending);
+            List<PasswordViewModel> Passwords = await ServizioPassword.GetPasswordsAsync(model);
             ViewData["Title"] = "Lista Password";
             return View(Passwords);
         }

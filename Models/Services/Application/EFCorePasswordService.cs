@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using PasswordManager.Models.InputModels;
 
 namespace PasswordManager.Models.Services.Application
 {
@@ -42,16 +43,48 @@ namespace PasswordManager.Models.Services.Application
             return pswdet;
         }
 
-        public async Task<List<PasswordViewModel>> GetPasswordsAsync(string search, int page, string orderby, bool ascending)
+        public async Task<List<PasswordViewModel>> GetPasswordsAsync(PasswordListInputModel model)
         {
-            search = search ?? "";
-            page = Math.Max(1, page);
-            int limit = (int)OpzioniPassword.CurrentValue.PerPage;
-            int offset = (page - 1) * limit;
-            IQueryable<PasswordViewModel> Qry_listapsw = dbContext.Passwords
-            .Where(Var_password => Var_password.Descrizione.Contains(search))
-            .Skip(offset)
-            .Take(limit)
+            IQueryable<Passwords> BaseQuery = dbContext.Passwords;
+
+            switch (model.Orderby)
+            {
+                case "Id":
+                    if (model.Ascending)
+                    {
+                        BaseQuery = BaseQuery.OrderBy(Var_Password => Var_Password.Id);
+                    }
+                    else
+                    {
+                        BaseQuery = BaseQuery.OrderByDescending(Var_Password => Var_Password.Id);
+                    }
+                    break;
+                case "Descrizione":
+                    if (model.Ascending)
+                    {
+                        BaseQuery = BaseQuery.OrderBy(Var_Password => Var_Password.Descrizione);
+                    }
+                    else
+                    {
+                        BaseQuery = BaseQuery.OrderByDescending(Var_Password => Var_Password.Descrizione);
+                    }
+                    break;
+                case "Sito":
+                    if (model.Ascending)
+                    {
+                        BaseQuery = BaseQuery.OrderBy(Var_Password => Var_Password.Sito);
+                    }
+                    else
+                    {
+                        BaseQuery = BaseQuery.OrderByDescending(Var_Password => Var_Password.Sito);
+                    }
+                    break;     
+            }
+
+            IQueryable<PasswordViewModel> Qry_listapsw = BaseQuery
+            .Where(Var_password => Var_password.Descrizione.Contains(model.Search))
+            .Skip(model.Offset)
+            .Take(model.Limit)
             .AsNoTracking()
             .Select(Var_password => new PasswordViewModel
             {
