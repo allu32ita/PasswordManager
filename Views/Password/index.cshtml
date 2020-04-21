@@ -1,4 +1,4 @@
-@model List<PasswordViewModel>
+@model PasswordListViewModel
 
 <div class="row">
     <div class="col-md-8">
@@ -7,7 +7,7 @@
     <div class="col-md-4 d-flex align-items-center">
         <form asp-controller="Password" asp-action="index" method="get">
             <div class="input-group">
-                <input type="text" name="search" placeholder="Cerca...">
+                <input type="text" name="search" placeholder="Cerca..." value="@Model.Input.Search">
                 <div class="input-group-append">
                     <button class="input-group-text">Ricerca</button>
                 </div>
@@ -18,19 +18,19 @@
 
 <div class="row">
     <div class="col-md-1">
-        <a asp-route-orderby="Id" asp-route-ascending="true">Id</a>    
+        <a asp-route-orderby="Id" asp-route-ascending="@(Model.Input.Orderby == "Id" ? !Model.Input.Ascending : true)" asp-route-search="@Model.Input.Search">Id @if(Model.Input.Orderby == "Id") { if(Model.Input.Ascending == true) { <h6>v</h6> }else{ <h6>^</h6> } }</a>    
     </div>
     <div class="col-md-4">
-        <a asp-route-orderby="Descrizione" asp-route-ascending="true">Descrizione</a>       
+        <a asp-route-orderby="Descrizione" asp-route-ascending="@(Model.Input.Orderby == "Descrizione" ? !Model.Input.Ascending : true)" asp-route-search="@Model.Input.Search">Descrizione @if(Model.Input.Orderby == "Descrizione") { if(Model.Input.Ascending == true) { <h6>v</h6> }else{ <h6>^</h6> } }</a>       
     </div>
     <div class="col-md-4">
-        <a asp-route-orderby="Sito" asp-route-ascending="true">Sito</a>        
+        <a asp-route-orderby="Sito" asp-route-ascending="@(Model.Input.Orderby == "Sito" ? !Model.Input.Ascending : true)" asp-route-search="@Model.Input.Search">Sito @if(Model.Input.Orderby == "Sito") { if(Model.Input.Ascending == true) { <h6>v</h6> }else{ <h6>^</h6> } }</a>        
     </div>
     <div class="col-md-3" d-flex align-item-center>    
     </div>    
 </div>
 
-@foreach(PasswordViewModel pass in Model)
+@foreach(PasswordViewModel pass in Model.Passwords)
 {
 <hr>
 <div class="row">

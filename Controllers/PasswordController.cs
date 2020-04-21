@@ -15,11 +15,18 @@ namespace PasswordManager.Controllers
         {
             this.ServizioPassword = ServizioPassword;
         }
-        public async Task<IActionResult> index(PasswordListInputModel model)
+        public async Task<IActionResult> index(PasswordListInputModel input)
         {
-            List<PasswordViewModel> Passwords = await ServizioPassword.GetPasswordsAsync(model);
+            List<PasswordViewModel> passwords = await ServizioPassword.GetPasswordsAsync(input);
+
+            PasswordListViewModel viewModel = new PasswordListViewModel
+            {
+                Passwords = passwords,
+                Input = input
+            };
+            
             ViewData["Title"] = "Lista Password";
-            return View(Passwords);
+            return View(viewModel);
         }
 
         public async Task<IActionResult> detail(string id)
