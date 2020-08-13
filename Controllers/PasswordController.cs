@@ -17,7 +17,7 @@ namespace PasswordManager.Controllers
         }
         public async Task<IActionResult> index(PasswordListInputModel input)
         {
-            List<PasswordViewModel> passwords = await ServizioPassword.GetPasswordsAsync(input);
+            ListViewModel<PasswordViewModel> passwords = await ServizioPassword.GetPasswordsAsync(input);
 
             PasswordListViewModel viewModel = new PasswordListViewModel
             {

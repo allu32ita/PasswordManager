@@ -43,7 +43,7 @@ namespace PasswordManager.Models.Services.Application
             return pswdet;
         }
 
-        public async Task<List<PasswordViewModel>> GetPasswordsAsync(PasswordListInputModel model)
+        public async Task<ListViewModel<PasswordViewModel>> GetPasswordsAsync(PasswordListInputModel model)
         {
             IQueryable<Passwords> BaseQuery = dbContext.Passwords;
 
@@ -83,8 +83,6 @@ namespace PasswordManager.Models.Services.Application
 
             IQueryable<PasswordViewModel> Qry_listapsw = BaseQuery
             .Where(Var_password => Var_password.Descrizione.Contains(model.Search))
-            .Skip(model.Offset)
-            .Take(model.Limit)
             .AsNoTracking()
             .Select(Var_password => new PasswordViewModel
             {
@@ -94,8 +92,35 @@ namespace PasswordManager.Models.Services.Application
                 sito = Var_password.Sito,
                 tipo = Var_password.Tipo
             });
-            List<PasswordViewModel> listapsw = await Qry_listapsw.ToListAsync();
-            return listapsw;
+            List<PasswordViewModel> listapsw = await Qry_listapsw
+            .Skip(model.Offset)
+            .Take(model.Limit)
+            .ToListAsync();
+
+            int totalCount = await Qry_listapsw.CountAsync();
+
+            ListViewModel<PasswordViewModel> result = new ListViewModel<PasswordViewModel>
+            {
+                Results = listapsw,
+                TotalCount = totalCount
+            };
+
+            return result;
+        }
+
+        public async Task<List<PasswordViewModel>> GetListUltimePasswordAsync()
+        {
+            PasswordListInputModel List_InputModel = new PasswordListInputModel(
+                search: "",
+                page: 1,
+                orderby: "Id",
+                ascending: false,
+                limit: (int)OpzioniPassword.CurrentValue.InHome,
+                orderPassword : OpzioniPassword.CurrentValue.Order
+            );
+
+            ListViewModel<PasswordViewModel> List_PassViewModel = await GetPasswordsAsync(List_InputModel);
+            return List_PassViewModel.Results;
         }
     }
 }

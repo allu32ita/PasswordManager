@@ -5,7 +5,7 @@ namespace PasswordManager.Models.ViewModels
 {
     public class PasswordListViewModel
     {
-        public List<PasswordViewModel> Passwords {get; set;}
+        public ListViewModel<PasswordViewModel> Passwords {get; set;}
         public PasswordListInputModel Input {get; set;} 
     }
 }

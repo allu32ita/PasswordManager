@@ -1,1 +1,33 @@
-sono la index home
+@model HomeViewModel
+
+
+<<div class="jumbotron">
+    <h1 class="display-4">@ViewData["Title"]</h1>
+    <p class="lead">Gestione Password</p>
+    <hr class="my-4">
+    <p><a asp-controller="Password" asp-action="Index" class="btn btn-primary">Sfoglia la lista delle Password</a></p>
+</div>
+
+<section>
+    <h2>
+        Aggiunti di recente
+    </h2>
+    @foreach (var password in Model.List_UltimePassword)
+    {
+        <hr>
+        <div class="row">
+            <div class="col-md-1">
+                @password.id
+            </div>
+            <div class="col-md-4">
+                @password.descrizione
+            </div>
+            <div class="col-md-4">
+                @password.sito
+            </div>
+            <div class="col-md-3" d-flex align-item-center>
+                <a class="btn btn-outline-primary" asp-action="detail" asp-controller="Password" asp-route-id="@password.id">Dettaglio Password</a>
+            </div>
+        </div>
+    }
+</section>

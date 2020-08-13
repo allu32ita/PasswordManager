@@ -27,7 +27,7 @@ namespace PasswordManager.Models.Services.Application
             });
         }
 
-        public Task<List<PasswordViewModel>> GetPasswordsAsync(PasswordListInputModel model)
+        public Task<ListViewModel<PasswordViewModel>> GetPasswordsAsync(PasswordListInputModel model)
         {
             bool canCache = model.Page <= 5 && string.IsNullOrEmpty(model.Search);
             if (canCache)
@@ -39,6 +39,14 @@ namespace PasswordManager.Models.Services.Application
                 });
             }
             return passwordService.GetPasswordsAsync(model);
+        }
+
+        public Task<List<PasswordViewModel>> GetListUltimePasswordAsync()
+        {
+            return memoryChache.GetOrCreateAsync($"UltimePassword", cacheEntry => {
+                cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(1));
+                return passwordService.GetListUltimePasswordAsync();
+            });
         }
     }
 }

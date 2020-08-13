@@ -16,12 +16,13 @@ namespace PasswordManager.Customizations.ModelBinders
         }
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            string search = bindingContext.ValueProvider.GetValue("Search").FirstValue;
-            int page = Convert.ToInt32(bindingContext.ValueProvider.GetValue("Page").FirstValue);
+            string search  = bindingContext.ValueProvider.GetValue("Search").FirstValue;
             string orderby = bindingContext.ValueProvider.GetValue("OrderBy").FirstValue;
+            int page       = Convert.ToInt32(bindingContext.ValueProvider.GetValue("Page").FirstValue);
             bool ascending = Convert.ToBoolean(bindingContext.ValueProvider.GetValue("Ascending").FirstValue);
 
-            var inputModel = new PasswordListInputModel(search, page, orderby, ascending, opzioniPasswords.CurrentValue);
+            PasswordsOptions Var_OpzioniPassword = opzioniPasswords.CurrentValue;
+            var inputModel = new PasswordListInputModel(search, page, orderby, ascending, (int)Var_OpzioniPassword.PerPage, Var_OpzioniPassword.Order);
 
             bindingContext.Result = ModelBindingResult.Success(inputModel);
             return Task.CompletedTask;

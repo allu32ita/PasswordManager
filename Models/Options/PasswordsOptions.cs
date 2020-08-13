@@ -11,9 +11,10 @@ namespace PasswordManager.Models.Options
     {
 
         public long PerPage { get; set; }
-
+        public long InHome { get; set;}
         public PasswordsOrderOptions Order { get; set; }
     }
+        
 
     public partial class PasswordsOrderOptions
     {

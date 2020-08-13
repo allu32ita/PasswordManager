@@ -37,3 +37,11 @@ footer {
     text-align: center;
     color: gray;
 }
+.jumbotron {
+    background-color: azure;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.jumbotron {
+    font-size: 3.5rem;
+}

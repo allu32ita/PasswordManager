@@ -9,14 +9,13 @@ namespace PasswordManager.Models.InputModels
     [ModelBinder(BinderType = typeof(PasswordListInputModelBinder))]
     public class PasswordListInputModel
     {
-        public PasswordListInputModel(string search, int page, string orderby, bool ascending, PasswordsOptions opzioniPasswords)
+        public PasswordListInputModel(string search, int page, string orderby, bool ascending, int limit, PasswordsOrderOptions orderPassword)
         {
             //sanitizzazione
-            var orderOptions = opzioniPasswords.Order;
-            if (!orderOptions.Allow.Contains(orderby))
+            if (!orderPassword.Allow.Contains(orderby))
             {
-                orderby = orderOptions.By;
-                ascending = orderOptions.Ascending;
+                orderby = orderPassword.By;
+                ascending = orderPassword.Ascending;
             }
 
 
@@ -25,7 +24,7 @@ namespace PasswordManager.Models.InputModels
             Orderby = orderby;
             Ascending = ascending;
 
-            Limit = (int)opzioniPasswords.PerPage;
+            Limit = (int)limit;
             Offset = (Page - 1) * Limit;
         }
        

@@ -35,7 +35,7 @@ namespace PasswordManager.Models.Services.Application
             return psw;
         }
 
-        public async Task<List<PasswordViewModel>> GetPasswordsAsync(PasswordListInputModel model)
+        public async Task<ListViewModel<PasswordViewModel>> GetPasswordsAsync(PasswordListInputModel model)
         {
             bool canCache = model.Page <= 5 && string.IsNullOrEmpty(model.Search);
             if (canCache == true)
@@ -43,9 +43,9 @@ namespace PasswordManager.Models.Services.Application
                 string key = $"Passwords{model.Page} = {model.Orderby} = {model.Ascending}";
                 string serializedObject = await distributedCache.GetStringAsync(key);
                 if (serializedObject != null) {
-                    return Deserialize<List<PasswordViewModel>>(serializedObject);
+                    return Deserialize<ListViewModel<PasswordViewModel>>(serializedObject);
                 }
-                List<PasswordViewModel> listpsw = await passwordService.GetPasswordsAsync(model);
+                ListViewModel<PasswordViewModel> listpsw = await passwordService.GetPasswordsAsync(model);
                 serializedObject = Serialize(listpsw);
 
                 var cacheOptions = new DistributedCacheEntryOptions();
@@ -56,7 +56,7 @@ namespace PasswordManager.Models.Services.Application
             }
             else
             {
-                List<PasswordViewModel> listpsw = await passwordService.GetPasswordsAsync(model);    
+                ListViewModel<PasswordViewModel> listpsw = await passwordService.GetPasswordsAsync(model);    
                 return listpsw;
             }
         }
@@ -69,6 +69,24 @@ namespace PasswordManager.Models.Services.Application
         private T Deserialize<T>(string serializedObject)
         {
             return JsonConvert.DeserializeObject<T>(serializedObject);
+        }
+
+        public async Task<List<PasswordViewModel>> GetListUltimePasswordAsync()
+        {
+            string key = $"UtlimePassword";
+            string serializedObject = await distributedCache.GetStringAsync(key);
+            if (serializedObject != null) {
+                return Deserialize<List<PasswordViewModel>>(serializedObject);
+            }
+
+            List<PasswordViewModel> listpsw = await passwordService.GetListUltimePasswordAsync();
+            serializedObject = Serialize(listpsw);
+
+            var cacheOptions = new DistributedCacheEntryOptions();
+            cacheOptions.SetAbsoluteExpiration(TimeSpan.FromSeconds(1));
+
+            await distributedCache.SetStringAsync(key, serializedObject, cacheOptions);
+            return listpsw;   
         }
     }
 }

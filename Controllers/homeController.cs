@@ -1,4 +1,8 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using PasswordManager.Models.Services.Application;
+using PasswordManager.Models.ViewModels;
 
 namespace PasswordManager.Controllers
 {
@@ -7,10 +11,15 @@ namespace PasswordManager.Controllers
     public class homeController : Controller
     {
         [ResponseCache(CacheProfileName = "Home")]
-        public IActionResult index()
+        public async Task<IActionResult> index([FromServices] ICachedPasswordService passwordService)
         {
             ViewData["Title"] = "Home";
-            return View();
+            List<PasswordViewModel> List_UltimePassword = await passwordService.GetListUltimePasswordAsync();
+
+            HomeViewModel View_Home = new HomeViewModel();
+            View_Home.List_UltimePassword = List_UltimePassword;
+
+            return View(View_Home);
         }
     }
 }

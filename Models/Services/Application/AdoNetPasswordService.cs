@@ -25,7 +25,6 @@ namespace PasswordManager.Models.Services.Application
             this.log = log;
             this.db = db;
         }
-
         public async Task<PasswordDetailViewModel> GetPasswordAsync(string id)
         {
             log.LogInformation("password {id} requested", id);
@@ -43,10 +42,11 @@ namespace PasswordManager.Models.Services.Application
         }
 
 
-        public async Task<List<PasswordViewModel>> GetPasswordsAsync(PasswordListInputModel model)
+        public async Task<ListViewModel<PasswordViewModel>> GetPasswordsAsync(PasswordListInputModel model)
         {
             string direction = model.Ascending ? "ASC" : "DESC";
-            FormattableString query = $"SELECT * FROM Passwords where Descrizione LIKE {"%" + model.Search + "%"} ORDER BY {(Sql) model.Orderby} {(Sql) direction} LIMIT {model.Limit} OFFSET {model.Offset}";
+            FormattableString query = $@"SELECT * FROM Passwords where Descrizione LIKE {"%" + model.Search + "%"} ORDER BY {(Sql) model.Orderby} {(Sql) direction} LIMIT {model.Limit} OFFSET {model.Offset}; 
+            SELECT COUNT(*) FROM Passwords where Descrizione LIKE {"%" + model.Search + "%"} ";
             DataSet dset = await db.QueryAsync(query);
             var dtable = dset.Tables[0];
             var listaPass = new List<PasswordViewModel>();
@@ -55,7 +55,28 @@ namespace PasswordManager.Models.Services.Application
                 PasswordViewModel pass = PasswordViewModel.FromDataRow(passRow);
                 listaPass.Add(pass);
             }
-            return listaPass;
+
+            ListViewModel<PasswordViewModel> result = new ListViewModel<PasswordViewModel>
+            {
+                Results = listaPass,
+                TotalCount = Convert.ToInt32(dset.Tables[1].Rows[0][0])
+            };
+
+            return result;
+        }
+
+        public async Task<List<PasswordViewModel>> GetListUltimePasswordAsync()
+        {
+            PasswordListInputModel List_InputModel = new PasswordListInputModel(
+                search: "",
+                page: 1,
+                orderby: "Id",
+                ascending: false,
+                limit: (int)OpzioniPassword.CurrentValue.InHome,
+                orderPassword : OpzioniPassword.CurrentValue.Order
+            );
+            ListViewModel<PasswordViewModel> List_PassViewModel = await GetPasswordsAsync(List_InputModel);
+            return List_PassViewModel.Results;
         }
     }
 }

@@ -7,7 +7,8 @@ namespace PasswordManager.Models.Services.Application
 {
     public interface IPasswordService
     {
-         Task<List<PasswordViewModel>> GetPasswordsAsync(PasswordListInputModel model);
+         Task<ListViewModel<PasswordViewModel>> GetPasswordsAsync(PasswordListInputModel model);
          Task<PasswordDetailViewModel> GetPasswordAsync(string id);
+         Task<List<PasswordViewModel>> GetListUltimePasswordAsync();
     }
 }
