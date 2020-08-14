@@ -19,26 +19,30 @@ namespace PasswordManager.Customizations.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            string sAsc = "";
-            string sDirection = "";
-            if ((Input.Orderby == OrderBy) & (Input.Ascending == true))
-            {
-                sAsc = "false";
-                sDirection = "^"; 
-            }
-            else
-            {
-                sAsc = "true";
-                sDirection = "v"; 
-            }
-
             output.TagName = "a";
             RouteValues["search"] = Input.Search;
             RouteValues["orderby"] = OrderBy;
-            //RouteValues["ascending"] = (Input.Orderby == OrderBy ? !Input.Ascending : Input.Ascending).ToString().ToLowerInvariant();
-            RouteValues["ascending"] = sAsc;
+            if ((Input.Orderby == OrderBy) & (Input.Ascending == true))
+            {
+                RouteValues["ascending"] = "false";
+            }
+            else
+            {
+                RouteValues["ascending"] = "true";
+            }
             base.Process(context, output);
-            output.PostContent.SetHtmlContent($"<h6>{sDirection}</h6>");
+            if (Input.Orderby == OrderBy)
+            {
+                if (Input.Ascending == true)
+                {
+                    output.PostContent.SetHtmlContent($"<h6>v</h6>");
+                }
+                else
+                {
+                    output.PostContent.SetHtmlContent($"<h6>^</h6>");
+                }
+            }
+            
         }
     }
 }

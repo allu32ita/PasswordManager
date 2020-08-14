@@ -14,20 +14,6 @@
     </h2>
     @foreach (var password in Model.List_UltimePassword)
     {
-        <hr>
-        <div class="row">
-            <div class="col-md-1">
-                @password.id
-            </div>
-            <div class="col-md-4">
-                @password.descrizione
-            </div>
-            <div class="col-md-4">
-                @password.sito
-            </div>
-            <div class="col-md-3" d-flex align-item-center>
-                <a class="btn btn-outline-primary" asp-action="detail" asp-controller="Password" asp-route-id="@password.id">Dettaglio Password</a>
-            </div>
-        </div>
+        <partial name="Passwords/_PasswordLine" model="@password"></partial>
     }
 </section>

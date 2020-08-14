@@ -32,56 +32,7 @@
 
 @foreach(PasswordViewModel pass in Model.Passwords.Results)
 {
-<hr>
-<div class="row">
-    <div class="col-md-1">
-        @pass.id
-    </div>
-    <div class="col-md-4">
-        @pass.descrizione
-    </div>
-    <div class="col-md-4">
-        @pass.sito
-    </div>
-    <div class="col-md-3" d-flex align-item-center>
-        <a class="btn btn-outline-primary" asp-action="detail" asp-controller="Password" asp-route-id="@pass.id">Dettaglio Password</a>
-    </div>
-</div>
+    <partial name="Passwords/_PasswordLine" model="@pass"></partial>
 }
-@{
-    int totalPages   = (int) Math.Ceiling(Model.Passwords.TotalCount / (decimal) Model.Input.Limit);
-    int currentPage  = Model.Input.Page;
-    int inizioPagine = Math.Max(1, currentPage - 4);
-    int finePagine   = Math.Min(totalPages, currentPage + 4);
-}
-<<nav aria-label="Paginazione">
-    <ul class="pagination d-flex justify-content-center mt-3">
-        @if(currentPage > 1)
-        {
-            <li class="page-item">
-                <a class="page-link" asp-route-page="@(currentPage - 1)" asp-route-search="@Model.Input.Search" asp-route-orderby="@Model.Input.Orderby" asp-route-ascending="@Model.Input.Ascending"> - </a>
-            </li>    
-        }
-        @for (int p = inizioPagine; p <= finePagine; p++)
-        {
-            if (p == currentPage)
-            {
-                <li class="page-item active" aria-current="page">
-                    <a class="page-link" asp-route-page="@p" asp-route-search="@Model.Input.Search" asp-route-orderby="@Model.Input.Orderby" asp-route-ascending="@Model.Input.Ascending">@p <span class="sr-only">(current)</span></a>
-                </li> 
-            }
-            else
-            {
-                <li class="page-item">
-                    <a class="page-link" asp-route-page="@p" asp-route-search="@Model.Input.Search" asp-route-orderby="@Model.Input.Orderby" asp-route-ascending="@Model.Input.Ascending">@p</a>
-                </li>
-            }      
-        }
-        @if(currentPage < totalPages)
-        {
-            <li class="page-item">
-                <a class="page-link" asp-route-page="@(currentPage + 1)" asp-route-search="@Model.Input.Search" asp-route-orderby="@Model.Input.Orderby" asp-route-ascending="@Model.Input.Ascending"> + </a>
-            </li>    
-        }
-    </ul>
-</nav>
+
+<vc:pagination-bar model="@Model"></vc:pagination-bar>
