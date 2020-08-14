@@ -18,13 +18,13 @@
 
 <div class="row">
     <div class="col-md-1">
-        <a asp-route-orderby="Id" asp-route-ascending="@(Model.Input.Orderby == "Id" ? !Model.Input.Ascending : true)" asp-route-search="@Model.Input.Search">Id @if(Model.Input.Orderby == "Id") { if(Model.Input.Ascending == true) { <h6>v</h6> }else{ <h6>^</h6> } }</a>    
+        <order-link order-by="Id" Input="@Model.Input">Id</order-link>
     </div>
     <div class="col-md-4">
-        <a asp-route-orderby="Descrizione" asp-route-ascending="@(Model.Input.Orderby == "Descrizione" ? !Model.Input.Ascending : true)" asp-route-search="@Model.Input.Search">Descrizione @if(Model.Input.Orderby == "Descrizione") { if(Model.Input.Ascending == true) { <h6>v</h6> }else{ <h6>^</h6> } }</a>       
+        <order-link order-by="Descrizione" Input="@Model.Input">Descrizione</order-link>
     </div>
     <div class="col-md-4">
-        <a asp-route-orderby="Sito" asp-route-ascending="@(Model.Input.Orderby == "Sito" ? !Model.Input.Ascending : true)" asp-route-search="@Model.Input.Search">Sito @if(Model.Input.Orderby == "Sito") { if(Model.Input.Ascending == true) { <h6>v</h6> }else{ <h6>^</h6> } }</a>        
+        <order-link order-by="Sito" Input="@Model.Input">Sito</order-link>
     </div>
     <div class="col-md-3" d-flex align-item-center>    
     </div>    

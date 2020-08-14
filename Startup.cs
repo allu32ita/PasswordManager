@@ -43,23 +43,25 @@ namespace PasswordManager
             services.AddTransient<IPasswordService, AdoNetPasswordService>();
             //services.AddTransient<IPasswordService, EFCorePasswordService>();
             services.AddTransient<IDatabaseAccessor, SqLiteDatabaseAccessor>();
-            //services.AddTransient<ICachedPasswordService, MemoryCachedPasswordService>(); 
-            services.AddTransient<ICachedPasswordService, DistributedCachePasswordService>(); 
+            services.AddTransient<ICachedPasswordService, MemoryCachedPasswordService>(); 
+            
+            
+            //services.AddTransient<ICachedPasswordService, DistributedCachePasswordService>(); 
             
             services.AddDbContextPool<PasswordDbContext>(optionsBuilder => {
                 String ConnectionString = Configuration.GetSection("ConnectionStrings").GetValue<String>("Default");
                 optionsBuilder.UseSqlite(ConnectionString);
             });
             
-            services.AddStackExchangeRedisCache(options => {
-                Configuration.Bind("DistributedCache:Redis", options);
-            });
+            //services.AddStackExchangeRedisCache(options => {
+            //    Configuration.Bind("DistributedCache:Redis", options);
+            //});
 
             //services.AddDistributedSqlServerCache(options => {
             //    Configuration.Bind("DistributedCache:SqlServer", options);
             //});
 
-            //services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));
+            services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));
 
             //Options
             services.Configure<PasswordsOptions>(Configuration.GetSection("Passwords"));
