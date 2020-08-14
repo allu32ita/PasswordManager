@@ -40,8 +40,8 @@ namespace PasswordManager
                 Configuration.Bind("ResponseCache:Home", HomeProfile);
                 options.CacheProfiles.Add("Home", HomeProfile);
             }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-            services.AddTransient<IPasswordService, AdoNetPasswordService>();
-            //services.AddTransient<IPasswordService, EFCorePasswordService>();
+            //services.AddTransient<IPasswordService, AdoNetPasswordService>();
+            services.AddTransient<IPasswordService, EFCorePasswordService>();
             services.AddTransient<IDatabaseAccessor, SqLiteDatabaseAccessor>();
             services.AddTransient<ICachedPasswordService, MemoryCachedPasswordService>(); 
             
@@ -53,9 +53,6 @@ namespace PasswordManager
                 optionsBuilder.UseSqlite(ConnectionString);
             });
             
-            //services.AddStackExchangeRedisCache(options => {
-            //    Configuration.Bind("DistributedCache:Redis", options);
-            //});
 
             //services.AddDistributedSqlServerCache(options => {
             //    Configuration.Bind("DistributedCache:SqlServer", options);
@@ -84,7 +81,6 @@ namespace PasswordManager
             {
                 app.UseExceptionHandler("/Error");
             }
-            //app.UseExceptionHandler("/Error");
             app.UseStaticFiles();
 
             //endpoint routing middleware
@@ -96,11 +92,6 @@ namespace PasswordManager
             app.UseEndpoints(routeBuilder => {
                 routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
-            /*
-            app.UseMvc(routebuilder => {
-                routebuilder.MapRoute("default", "{controller=home}/{action=index}/{id?}");
-            });
-            */
         }
     }
 }

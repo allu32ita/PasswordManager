@@ -81,9 +81,13 @@ namespace PasswordManager.Models.Services.Application
                     break;     
             }
 
-            IQueryable<PasswordViewModel> Qry_listapsw = BaseQuery
+            IQueryable<Passwords> Qry_listapsw = BaseQuery
             .Where(Var_password => Var_password.Descrizione.Contains(model.Search))
-            .AsNoTracking()
+            .AsNoTracking();
+            
+            List<PasswordViewModel> listapsw = await Qry_listapsw
+            .Skip(model.Offset)
+            .Take(model.Limit)
             .Select(Var_password => new PasswordViewModel
             {
                 id = Var_password.Id,
@@ -91,10 +95,7 @@ namespace PasswordManager.Models.Services.Application
                 Password = Var_password.Password,
                 sito = Var_password.Sito,
                 tipo = Var_password.Tipo
-            });
-            List<PasswordViewModel> listapsw = await Qry_listapsw
-            .Skip(model.Offset)
-            .Take(model.Limit)
+            })
             .ToListAsync();
 
             int totalCount = await Qry_listapsw.CountAsync();
