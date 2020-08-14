@@ -15,7 +15,7 @@ using Microsoft.Extensions.Configuration;
 using PasswordManager.Models.Options;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
+using Microsoft.Extensions.Hosting;
 
 namespace PasswordManager
 {
@@ -39,7 +39,7 @@ namespace PasswordManager
                 //HomeProfile.VaryByQueryKeys = new string[] {"page"};
                 Configuration.Bind("ResponseCache:Home", HomeProfile);
                 options.CacheProfiles.Add("Home", HomeProfile);
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddTransient<IPasswordService, AdoNetPasswordService>();
             //services.AddTransient<IPasswordService, EFCorePasswordService>();
             services.AddTransient<IDatabaseAccessor, SqLiteDatabaseAccessor>();
@@ -70,7 +70,7 @@ namespace PasswordManager
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
         {
             if (env.IsEnvironment("Development"))
             {
@@ -87,10 +87,20 @@ namespace PasswordManager
             //app.UseExceptionHandler("/Error");
             app.UseStaticFiles();
 
+            //endpoint routing middleware
+            app.UseRouting();
+
             app.UseResponseCaching();
+
+            //usare endpoint middleware
+            app.UseEndpoints(routeBuilder => {
+                routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+            });
+            /*
             app.UseMvc(routebuilder => {
                 routebuilder.MapRoute("default", "{controller=home}/{action=index}/{id?}");
             });
+            */
         }
     }
 }
