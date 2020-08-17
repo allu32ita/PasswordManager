@@ -1,0 +1,14 @@
+@model PasswordCreateInputModel
+
+<h1>@ViewData["Descrizione"]</h1>
+
+<form method="POST">
+    <div class="row">
+        <div class="col-md-8">
+            <input type="text" asp-for="Descrizione" class="form-control form-control-lg" placeholder="Digita una Descrizione per la password">
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Crea Password</button>
+        </div>
+    </div>
+</form>

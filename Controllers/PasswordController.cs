@@ -35,5 +35,20 @@ namespace PasswordManager.Controllers
             ViewData["Title"] = "Dettaglio numero " + Pass.id.ToString();
             return View(Pass);
         }
+
+        //[HttpGet]  per identificare in modo esplicito che il Create() e di visualizzazione della view
+        public IActionResult Create()
+        {
+            ViewData["Descrizione"] = "Nuova Password";
+            var Var_InputModel = new PasswordCreateInputModel();
+            return View(Var_InputModel);
+        }
+
+        [HttpPost]  //per identificare in modo esplicito che il Create(PasswordCreateInputModel Par_InputModel) e di reperimento info da bottone post nella view
+        public IActionResult Create(PasswordCreateInputModel Par_InputModel)
+        {
+            //coinvolge un servizio applicativo in modo che la password venga creata
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

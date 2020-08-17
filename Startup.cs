@@ -40,8 +40,8 @@ namespace PasswordManager
                 Configuration.Bind("ResponseCache:Home", HomeProfile);
                 options.CacheProfiles.Add("Home", HomeProfile);
             }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-            //services.AddTransient<IPasswordService, AdoNetPasswordService>();
-            services.AddTransient<IPasswordService, EFCorePasswordService>();
+            services.AddTransient<IPasswordService, AdoNetPasswordService>();
+            //services.AddTransient<IPasswordService, EFCorePasswordService>();
             services.AddTransient<IDatabaseAccessor, SqLiteDatabaseAccessor>();
             services.AddTransient<ICachedPasswordService, MemoryCachedPasswordService>(); 
             
