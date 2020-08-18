@@ -123,5 +123,10 @@ namespace PasswordManager.Models.Services.Application
             ListViewModel<PasswordViewModel> List_PassViewModel = await GetPasswordsAsync(List_InputModel);
             return List_PassViewModel.Results;
         }
+
+        public Task<PasswordDetailViewModel> CreatePasswordAsync(PasswordCreateInputModel par_InputModel)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

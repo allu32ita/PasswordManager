@@ -10,14 +10,14 @@ namespace PasswordManager.Controllers
 {
     public class PasswordController : Controller
     {
-        private readonly IPasswordService ServizioPassword;
-        public PasswordController(ICachedPasswordService ServizioPassword)
+        private readonly IPasswordService prop_PasswordService;
+        public PasswordController(ICachedPasswordService var_PasswordService)
         {
-            this.ServizioPassword = ServizioPassword;
+            this.prop_PasswordService = var_PasswordService;
         }
         public async Task<IActionResult> index(PasswordListInputModel input)
         {
-            ListViewModel<PasswordViewModel> passwords = await ServizioPassword.GetPasswordsAsync(input);
+            ListViewModel<PasswordViewModel> passwords = await prop_PasswordService.GetPasswordsAsync(input);
 
             PasswordListViewModel viewModel = new PasswordListViewModel
             {
@@ -31,7 +31,7 @@ namespace PasswordManager.Controllers
 
         public async Task<IActionResult> detail(string id)
         {
-            PasswordDetailViewModel Pass = await ServizioPassword.GetPasswordAsync(id);
+            PasswordDetailViewModel Pass = await prop_PasswordService.GetPasswordAsync(id);
             ViewData["Title"] = "Dettaglio numero " + Pass.id.ToString();
             return View(Pass);
         }
@@ -45,9 +45,9 @@ namespace PasswordManager.Controllers
         }
 
         [HttpPost]  //per identificare in modo esplicito che il Create(PasswordCreateInputModel Par_InputModel) e di reperimento info da bottone post nella view
-        public IActionResult Create(PasswordCreateInputModel Par_InputModel)
+        public async Task<IActionResult> Create(PasswordCreateInputModel par_InputModel)
         {
-            //coinvolge un servizio applicativo in modo che la password venga creata
+            PasswordDetailViewModel Var_Password = await prop_PasswordService.CreatePasswordAsync(par_InputModel);  
             return RedirectToAction(nameof(Index));
         }
     }

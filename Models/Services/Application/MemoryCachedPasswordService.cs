@@ -9,13 +9,13 @@ namespace PasswordManager.Models.Services.Application
 {
     public class MemoryCachedPasswordService : ICachedPasswordService
     {
-        private readonly IPasswordService passwordService;
+        private readonly IPasswordService prop_PasswordService;
         private readonly IMemoryCache memoryChache;
 
-        public MemoryCachedPasswordService(IPasswordService passwordService, IMemoryCache memoryChache)
+        public MemoryCachedPasswordService(IPasswordService var_PasswordService, IMemoryCache memoryChache)
         {
             this.memoryChache = memoryChache;
-            this.passwordService = passwordService;
+            this.prop_PasswordService = var_PasswordService;
         }
 
         public Task<PasswordDetailViewModel> GetPasswordAsync(string id)
@@ -23,7 +23,7 @@ namespace PasswordManager.Models.Services.Application
             return memoryChache.GetOrCreateAsync($"Password {id}", cacheEntry => {
                 cacheEntry.SetSize(1);
                 cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
-                return passwordService.GetPasswordAsync(id);
+                return prop_PasswordService.GetPasswordAsync(id);
             });
         }
 
@@ -35,18 +35,23 @@ namespace PasswordManager.Models.Services.Application
                 return memoryChache.GetOrCreateAsync($"Passwords{model.Page} = {model.Orderby} = {model.Ascending}", cacheEntry => {
                     cacheEntry.SetSize(2);
                     cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(1));
-                    return passwordService.GetPasswordsAsync(model);
+                    return prop_PasswordService.GetPasswordsAsync(model);
                 });
             }
-            return passwordService.GetPasswordsAsync(model);
+            return prop_PasswordService.GetPasswordsAsync(model);
         }
 
         public Task<List<PasswordViewModel>> GetListUltimePasswordAsync()
         {
             return memoryChache.GetOrCreateAsync($"UltimePassword", cacheEntry => {
                 cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(1));
-                return passwordService.GetListUltimePasswordAsync();
+                return prop_PasswordService.GetListUltimePasswordAsync();
             });
+        }
+
+        public Task<PasswordDetailViewModel> CreatePasswordAsync(PasswordCreateInputModel par_InputModel)
+        {
+            return prop_PasswordService.CreatePasswordAsync(par_InputModel);
         }
     }
 }

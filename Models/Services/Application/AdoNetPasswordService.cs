@@ -78,5 +78,17 @@ namespace PasswordManager.Models.Services.Application
             ListViewModel<PasswordViewModel> List_PassViewModel = await GetPasswordsAsync(List_InputModel);
             return List_PassViewModel.Results;
         }
+
+        public async Task<PasswordDetailViewModel> CreatePasswordAsync(PasswordCreateInputModel par_InputModel)
+        {
+            string sDescrizione     = par_InputModel.Descrizione;
+            string sDataInserimento = Convert.ToString(DateTime.Now);
+
+            var var_DataSet = await db.QueryAsync($@"INSERT INTO Passwords (Descrizione, DataInserimento) VALUES ({sDescrizione}, {sDataInserimento});
+                                                     SELECT last_insert_rowid();");
+            string sId = Convert.ToString(var_DataSet.Tables[0].Rows[0][0]);
+            PasswordDetailViewModel var_Password = await GetPasswordAsync(sId);
+            return var_Password;
+        }
     }
 }
