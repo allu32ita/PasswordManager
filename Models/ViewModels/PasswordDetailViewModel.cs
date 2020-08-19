@@ -10,11 +10,13 @@ namespace PasswordManager.Models.ViewModels
         public new static PasswordDetailViewModel FromDataRow(DataRow passRow)
         {
             var PswdViewModelDetail = new PasswordDetailViewModel {
-                id              = Convert.ToInt32(passRow["Id"]),
-                descrizione     = passRow["Descrizione"].ToString(),
+                Id              = Convert.ToInt32(passRow["Id"]),
                 Password        = passRow["Password"].ToString(),
-                sito            = passRow["Sito"].ToString(),
-                tipo            = passRow["Tipo"].ToString(),
+                Descrizione     = passRow["Descrizione"].ToString(),
+                DataInserimento = passRow["DataInserimento"].ToString(),
+                FkUtente        = Convert.ToInt32(passRow["FkUtente"]),
+                Sito            = passRow["Sito"].ToString(),
+                Tipo            = passRow["Tipo"].ToString(),
                 decrizioneEstesa = passRow["Descrizione"].ToString() + passRow["Sito"].ToString()
             };
             return PswdViewModelDetail;

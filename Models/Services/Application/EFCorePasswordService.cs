@@ -33,12 +33,12 @@ namespace PasswordManager.Models.Services.Application
             PasswordDetailViewModel pswdet = await dbContext.Passwords.Where(Var_password => Var_password.Id == int_ID)
                                                                       .Select(Var_password => new PasswordDetailViewModel
                                                                       {
-                                                                          id = Var_password.Id,
+                                                                          Id = Var_password.Id,
                                                                           decrizioneEstesa = "",
-                                                                          descrizione = Var_password.Descrizione,
+                                                                          Descrizione = Var_password.Descrizione,
                                                                           Password = Var_password.Password,
-                                                                          sito = Var_password.Sito,
-                                                                          tipo = Var_password.Tipo
+                                                                          Sito = Var_password.Sito,
+                                                                          Tipo = Var_password.Tipo
                                                                       }).SingleAsync();
             return pswdet;
         }
@@ -90,11 +90,11 @@ namespace PasswordManager.Models.Services.Application
             .Take(model.Limit)
             .Select(Var_password => new PasswordViewModel
             {
-                id = Var_password.Id,
-                descrizione = Var_password.Descrizione,
+                Id = Var_password.Id,
+                Descrizione = Var_password.Descrizione,
                 Password = Var_password.Password,
-                sito = Var_password.Sito,
-                tipo = Var_password.Tipo
+                Sito = Var_password.Sito,
+                Tipo = Var_password.Tipo
             })
             .ToListAsync();
 
@@ -124,9 +124,28 @@ namespace PasswordManager.Models.Services.Application
             return List_PassViewModel.Results;
         }
 
-        public Task<PasswordDetailViewModel> CreatePasswordAsync(PasswordCreateInputModel par_InputModel)
+        public async Task<PasswordDetailViewModel> CreatePasswordAsync(PasswordCreateInputModel par_InputModel)
         {
-            throw new NotImplementedException();
+            string sDescrizione = par_InputModel.Descrizione;
+            string sDataInserimento = Convert.ToString(DateTime.Now);
+
+            var var_Password = new Passwords();
+            var_Password.Descrizione        = sDescrizione;
+            var_Password.DataInserimento    = sDataInserimento;
+
+            dbContext.Add(var_Password);
+            await dbContext.SaveChangesAsync();
+
+            PasswordDetailViewModel var_DetailPassword = new PasswordDetailViewModel();
+            var_DetailPassword.Id               = var_Password.Id;
+            var_DetailPassword.Password         = var_Password.Password;
+            var_DetailPassword.Descrizione      = var_Password.Descrizione;
+            var_DetailPassword.DataInserimento  = var_Password.DataInserimento;
+            var_DetailPassword.FkUtente         = var_Password.FkUtente;
+            var_DetailPassword.Sito             = var_Password.Sito;
+            var_DetailPassword.Tipo             = var_Password.Tipo;            
+
+            return var_DetailPassword;
         }
     }
 }

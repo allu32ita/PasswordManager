@@ -6,24 +6,28 @@ namespace PasswordManager.Models.ViewModels
 {
     public class PasswordViewModel
     {
-        public int id {get; set;}
-
-        public string descrizione {get; set;}
+        public int Id {get; set;}
 
         public string Password {get; set;}
 
-        public string sito {get;set;}
+        public string Descrizione {get; set;}
 
-        public string tipo {get; set;}
+        public string DataInserimento {get; set;}
+
+        public int FkUtente {get; set;}
+
+        public string Sito {get;set;}
+
+        public string Tipo {get; set;}
 
         public static PasswordViewModel FromDataRow(DataRow passRow)
         {
             var PswdViewModel = new PasswordViewModel {
-                id              = Convert.ToInt32(passRow["Id"]),
-                descrizione     = passRow["Descrizione"].ToString(),
+                Id              = Convert.ToInt32(passRow["Id"]),
+                Descrizione     = passRow["Descrizione"].ToString(),
                 Password        = passRow["Password"].ToString(),
-                sito            = passRow["Password"].ToString(),
-                tipo            = passRow["Tipo"].ToString()
+                Sito            = passRow["Password"].ToString(),
+                Tipo            = passRow["Tipo"].ToString()
             };
             return PswdViewModel;
         }

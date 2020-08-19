@@ -32,7 +32,7 @@ namespace PasswordManager.Controllers
         public async Task<IActionResult> detail(string id)
         {
             PasswordDetailViewModel Pass = await prop_PasswordService.GetPasswordAsync(id);
-            ViewData["Title"] = "Dettaglio numero " + Pass.id.ToString();
+            ViewData["Title"] = "Dettaglio numero " + Pass.Id.ToString();
             return View(Pass);
         }
 
