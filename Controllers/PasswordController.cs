@@ -47,6 +47,10 @@ namespace PasswordManager.Controllers
         [HttpPost]  //per identificare in modo esplicito che il Create(PasswordCreateInputModel Par_InputModel) e di reperimento info da bottone post nella view
         public async Task<IActionResult> Create(PasswordCreateInputModel par_InputModel)
         {
+            if (ModelState.IsValid == false)
+            {
+                return View(par_InputModel);
+            }
             PasswordDetailViewModel Var_Password = await prop_PasswordService.CreatePasswordAsync(par_InputModel);  
             return RedirectToAction(nameof(Index));
         }

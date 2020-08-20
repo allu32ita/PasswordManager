@@ -9,17 +9,20 @@ namespace PasswordManager.Models.ViewModels
 
         public new static PasswordDetailViewModel FromDataRow(DataRow passRow)
         {
-            var PswdViewModelDetail = new PasswordDetailViewModel {
-                Id              = Convert.ToInt32(passRow["Id"]),
-                Password        = passRow["Password"].ToString(),
-                Descrizione     = passRow["Descrizione"].ToString(),
-                DataInserimento = passRow["DataInserimento"].ToString(),
-                FkUtente        = Convert.ToInt32(passRow["FkUtente"]),
-                Sito            = passRow["Sito"].ToString(),
-                Tipo            = passRow["Tipo"].ToString(),
-                decrizioneEstesa = passRow["Descrizione"].ToString() + passRow["Sito"].ToString()
-            };
-            return PswdViewModelDetail;
+            var var_PasswordDetail = new PasswordDetailViewModel();
+            var_PasswordDetail.Id              = Convert.ToInt32(passRow["Id"]);
+            var_PasswordDetail.Password        = passRow["Password"].ToString();
+            var_PasswordDetail.Descrizione     = Convert.ToString(passRow["Descrizione"]);
+            var_PasswordDetail.DataInserimento = passRow["DataInserimento"].ToString();
+            if (passRow["FkUtente"].ToString() != "")    //va in errore perche non riesce a convertire un DataRow con valore nullo in intero
+            {
+                var_PasswordDetail.FkUtente        = Convert.ToInt32(passRow["FkUtente"]);    
+            }
+            var_PasswordDetail.Sito            = passRow["Sito"].ToString();
+            var_PasswordDetail.Tipo            = passRow["Tipo"].ToString();
+            var_PasswordDetail.decrizioneEstesa = passRow["Descrizione"].ToString() + passRow["Sito"].ToString();
+            
+            return var_PasswordDetail;
         }
     }
 }
