@@ -11,5 +11,6 @@ namespace PasswordManager.Models.Services.Application
         Task<PasswordDetailViewModel> GetPasswordAsync(string id);
         Task<List<PasswordViewModel>> GetListUltimePasswordAsync();
         Task<PasswordDetailViewModel> CreatePasswordAsync(PasswordCreateInputModel par_InputModel);
+        Task<bool> DescrizioneDuplicataAsync(string par_Descrizione);
     }
 }

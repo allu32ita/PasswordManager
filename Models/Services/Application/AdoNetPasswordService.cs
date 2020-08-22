@@ -84,11 +84,36 @@ namespace PasswordManager.Models.Services.Application
             string sDescrizione     = par_InputModel.Descrizione;
             string sDataInserimento = Convert.ToString(DateTime.Now);
 
-            var var_DataSet = await db.QueryAsync($@"INSERT INTO Passwords (Descrizione, DataInserimento) VALUES ({sDescrizione}, {sDataInserimento});
+            bool bPasswordNonDuplicata = await DescrizioneDuplicataAsync(sDescrizione);
+
+            if (bPasswordNonDuplicata == true)
+            {
+                PasswordDetailViewModel var_Password;
+                var var_DataSet = await db.QueryAsync($@"INSERT INTO Passwords (Descrizione, DataInserimento) VALUES ({sDescrizione}, {sDataInserimento});
                                                      SELECT last_insert_rowid();");
-            string sId = Convert.ToString(var_DataSet.Tables[0].Rows[0][0]);
-            PasswordDetailViewModel var_Password = await GetPasswordAsync(sId);
-            return var_Password;
+                string sId = Convert.ToString(var_DataSet.Tables[0].Rows[0][0]);
+                var_Password = await GetPasswordAsync(sId);
+                return var_Password;
+            }
+            else
+            {
+               throw new PasswordDescrizioneDuplicataException(sDescrizione, new Exception ("errore nella creazione della password"));
+            }
+        }
+
+        public async Task<bool> DescrizioneDuplicataAsync(string par_Descrizione)
+        {
+            FormattableString query = $"SELECT COUNT(*) FROM Passwords where Descrizione = {par_Descrizione}; ";
+            DataSet var_DataSetCount = await db.QueryAsync(query);
+            int iNumPasswordTrovate = Convert.ToInt32(var_DataSetCount.Tables[0].Rows[0][0]);
+            if (iNumPasswordTrovate == 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            } 
         }
     }
 }

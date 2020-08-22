@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using PasswordManager.Models.Exceptions;
 using PasswordManager.Models.InputModels;
 using PasswordManager.Models.Services.Application;
 using PasswordManager.Models.ViewModels;
@@ -40,19 +41,35 @@ namespace PasswordManager.Controllers
         public IActionResult Create()
         {
             ViewData["Descrizione"] = "Nuova Password";
-            var Var_InputModel = new PasswordCreateInputModel();
-            return View(Var_InputModel);
+            var var_InputModel = new PasswordCreateInputModel();
+            return View(var_InputModel);
         }
 
         [HttpPost]  //per identificare in modo esplicito che il Create(PasswordCreateInputModel Par_InputModel) e di reperimento info da bottone post nella view
         public async Task<IActionResult> Create(PasswordCreateInputModel par_InputModel)
         {
-            if (ModelState.IsValid == false)
+            if (ModelState.IsValid == true)
             {
-                return View(par_InputModel);
+                try
+                {
+                    PasswordDetailViewModel var_Password = await prop_PasswordService.CreatePasswordAsync(par_InputModel); 
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (PasswordDescrizioneDuplicataException)
+                {
+                    ModelState.AddModelError(nameof(PasswordDetailViewModel.Descrizione), "Questa Password gia esiste");
+                }
+                
             }
-            PasswordDetailViewModel Var_Password = await prop_PasswordService.CreatePasswordAsync(par_InputModel);  
-            return RedirectToAction(nameof(Index));
+            ViewData["Descrizione"] = "Nuova Password";
+            return View(par_InputModel); 
         }
+
+        public async Task<IActionResult> DescrizioneDuplicata(string Descrizione)
+        {
+            bool var_Result = await prop_PasswordService.DescrizioneDuplicataAsync(Descrizione);
+            return Json(var_Result);
+        }
+
     }
 }

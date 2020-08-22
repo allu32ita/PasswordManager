@@ -53,5 +53,10 @@ namespace PasswordManager.Models.Services.Application
         {
             return prop_PasswordService.CreatePasswordAsync(par_InputModel);
         }
+
+        public Task<bool> DescrizioneDuplicataAsync(string par_Descrizione)
+        {
+            return prop_PasswordService.DescrizioneDuplicataAsync(par_Descrizione);
+        }
     }
 }

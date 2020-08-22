@@ -10,6 +10,7 @@ using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PasswordManager.Models.InputModels;
+using PasswordManager.Models.Exceptions;
 
 namespace PasswordManager.Models.Services.Application
 {
@@ -129,23 +130,50 @@ namespace PasswordManager.Models.Services.Application
             string sDescrizione = par_InputModel.Descrizione;
             string sDataInserimento = Convert.ToString(DateTime.Now);
 
-            var var_Password = new Passwords();
-            var_Password.Descrizione        = sDescrizione;
-            var_Password.DataInserimento    = sDataInserimento;
+            bool bPasswordNonDuplicata = await DescrizioneDuplicataAsync(sDescrizione);
 
-            dbContext.Add(var_Password);
-            await dbContext.SaveChangesAsync();
+            if (bPasswordNonDuplicata == true)
+            {
+                var var_Password = new Passwords();
+                var_Password.Descrizione        = sDescrizione;
+                var_Password.DataInserimento    = sDataInserimento;
 
-            PasswordDetailViewModel var_DetailPassword = new PasswordDetailViewModel();
-            var_DetailPassword.Id               = var_Password.Id;
-            var_DetailPassword.Password         = var_Password.Password;
-            var_DetailPassword.Descrizione      = var_Password.Descrizione;
-            var_DetailPassword.DataInserimento  = var_Password.DataInserimento;
-            var_DetailPassword.FkUtente         = var_Password.FkUtente;
-            var_DetailPassword.Sito             = var_Password.Sito;
-            var_DetailPassword.Tipo             = var_Password.Tipo;            
+                dbContext.Add(var_Password);
+                await dbContext.SaveChangesAsync();
 
-            return var_DetailPassword;
+                PasswordDetailViewModel var_DetailPassword = new PasswordDetailViewModel();
+                var_DetailPassword.Id               = var_Password.Id;
+                var_DetailPassword.Password         = var_Password.Password;
+                var_DetailPassword.Descrizione      = var_Password.Descrizione;
+                var_DetailPassword.DataInserimento  = var_Password.DataInserimento;
+                var_DetailPassword.FkUtente         = var_Password.FkUtente;
+                var_DetailPassword.Sito             = var_Password.Sito;
+                var_DetailPassword.Tipo             = var_Password.Tipo;            
+
+                return var_DetailPassword;
+            }
+            else
+            {
+               throw new PasswordDescrizioneDuplicataException(sDescrizione, new Exception ("errore nella creazione della password"));
+            }
+        }
+
+        public async Task<bool> DescrizioneDuplicataAsync(string par_Descrizione)
+        {
+            IQueryable<Passwords> BaseQuery = dbContext.Passwords;
+            IQueryable<Passwords> Qry_listapsw = BaseQuery
+            .Where(Var_password => Var_password.Descrizione.Equals(par_Descrizione))
+            .AsNoTracking();
+            int iNumPasswordTrovate = await Qry_listapsw.CountAsync();
+
+            if (iNumPasswordTrovate == 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
