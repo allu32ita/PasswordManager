@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using PasswordManager.Models.Exceptions;
 using System.Linq;
 using PasswordManager.Models.InputModels;
+using Microsoft.Data.Sqlite;
 
 namespace PasswordManager.Models.Services.Application
 {
@@ -114,6 +115,38 @@ namespace PasswordManager.Models.Services.Application
             {
                 return false;
             } 
+        }
+
+        public async Task<PasswordEditInputModel> GetPasswordForEditingAsync(int id)
+        {
+            FormattableString query = $"SELECT Id, Password, Descrizione, DataInserimento, FkUtente, Sito, Tipo, PathFile  FROM Passwords where Id = {id}; ";
+            DataSet var_DataSet = await db.QueryAsync(query);
+            var var_PasswordTable = var_DataSet.Tables[0];
+            if (var_PasswordTable.Rows.Count != 1)
+            {
+                //logger.LogWarning("Password {id} not found", id);
+                throw new PasswordNotFoundException(id);
+            }
+            var var_PasswordRow = var_PasswordTable.Rows[0];
+            var var_PasswordEditInputModel = PasswordEditInputModel.FromDataRow(var_PasswordRow);
+            return var_PasswordEditInputModel;
+        }
+
+        public async Task<PasswordDetailViewModel> EditPasswordAsync(PasswordEditInputModel par_InputModel)
+        {
+            string sDescrizione         = par_InputModel.Descrizione;
+            bool bPasswordNonDuplicata  = await DescrizioneDuplicataAsync(sDescrizione);
+            if (bPasswordNonDuplicata == true)
+            {
+                DataSet var_Dataset = await db.QueryAsync($"UPDATE Passwords SET Password={par_InputModel.Password}, Descrizione={par_InputModel.Descrizione}, DataInserimento={par_InputModel.DataInserimento}, FkUtente={par_InputModel.FkUtente}, Sito={par_InputModel.Sito}, Tipo={par_InputModel.Tipo}, PathFile={par_InputModel.PathFile} WHERE Id={par_InputModel.Id}"); 
+                PasswordDetailViewModel var_Password = await GetPasswordAsync(par_InputModel.Id.ToString());
+                return var_Password;
+            }
+            else
+            {
+                throw new PasswordDescrizioneDuplicataException(sDescrizione, new Exception ("errore nella creazione della password"));
+            }
+            
         }
     }
 }

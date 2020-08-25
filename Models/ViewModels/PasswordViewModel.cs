@@ -20,6 +20,8 @@ namespace PasswordManager.Models.ViewModels
 
         public string Tipo {get; set;}
 
+        public string PathFile {get; set; }
+
         public static PasswordViewModel FromDataRow(DataRow passRow)
         {
             var PswdViewModel = new PasswordViewModel {
@@ -27,7 +29,8 @@ namespace PasswordManager.Models.ViewModels
                 Descrizione     = passRow["Descrizione"].ToString(),
                 Password        = passRow["Password"].ToString(),
                 Sito            = passRow["Password"].ToString(),
-                Tipo            = passRow["Tipo"].ToString()
+                Tipo            = passRow["Tipo"].ToString(),
+                PathFile        = passRow["PathFile"].ToString()
             };
             return PswdViewModel;
         }

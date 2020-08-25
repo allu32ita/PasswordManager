@@ -58,5 +58,17 @@ namespace PasswordManager.Models.Services.Application
         {
             return prop_PasswordService.DescrizioneDuplicataAsync(par_Descrizione);
         }
+
+        public Task<PasswordEditInputModel> GetPasswordForEditingAsync(int id)
+        {
+            return prop_PasswordService.GetPasswordForEditingAsync(id);
+        }
+
+        public async Task<PasswordDetailViewModel> EditPasswordAsync(PasswordEditInputModel par_InputModel)
+        {
+            PasswordDetailViewModel var_Password = await prop_PasswordService.EditPasswordAsync(par_InputModel);
+            memoryChache.Remove($"Password{par_InputModel.Id}");
+            return var_Password;
+        }
     }
 }

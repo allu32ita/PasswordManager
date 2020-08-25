@@ -31,15 +31,16 @@ namespace PasswordManager.Models.Services.Application
         {
             log.LogInformation("password {id} requested", id);
             int int_ID = Convert.ToInt32(id);
-            PasswordDetailViewModel pswdet = await dbContext.Passwords.Where(Var_password => Var_password.Id == int_ID)
-                                                                      .Select(Var_password => new PasswordDetailViewModel
+            PasswordDetailViewModel pswdet = await dbContext.Passwords.Where(var_Password => var_Password.Id == int_ID)
+                                                                      .Select(var_Password => new PasswordDetailViewModel
                                                                       {
-                                                                          Id = Var_password.Id,
-                                                                          decrizioneEstesa = "",
-                                                                          Descrizione = Var_password.Descrizione,
-                                                                          Password = Var_password.Password,
-                                                                          Sito = Var_password.Sito,
-                                                                          Tipo = Var_password.Tipo
+                                                                          Id                = var_Password.Id,
+                                                                          decrizioneEstesa  = "",
+                                                                          Descrizione       = var_Password.Descrizione,
+                                                                          Password          = var_Password.Password,
+                                                                          Sito              = var_Password.Sito,
+                                                                          Tipo              = var_Password.Tipo,
+                                                                          PathFile          = var_Password.PathFile
                                                                       }).SingleAsync();
             return pswdet;
         }
@@ -140,16 +141,8 @@ namespace PasswordManager.Models.Services.Application
 
                 dbContext.Add(var_Password);
                 await dbContext.SaveChangesAsync();
-
-                PasswordDetailViewModel var_DetailPassword = new PasswordDetailViewModel();
-                var_DetailPassword.Id               = var_Password.Id;
-                var_DetailPassword.Password         = var_Password.Password;
-                var_DetailPassword.Descrizione      = var_Password.Descrizione;
-                var_DetailPassword.DataInserimento  = var_Password.DataInserimento;
-                var_DetailPassword.FkUtente         = var_Password.FkUtente;
-                var_DetailPassword.Sito             = var_Password.Sito;
-                var_DetailPassword.Tipo             = var_Password.Tipo;            
-
+    
+                PasswordDetailViewModel var_DetailPassword = PasswordDetailViewModel.FromEntity(var_Password);        
                 return var_DetailPassword;
             }
             else
@@ -173,6 +166,57 @@ namespace PasswordManager.Models.Services.Application
             else
             {
                 return false;
+            }
+        }
+
+        public async Task<PasswordEditInputModel> GetPasswordForEditingAsync(int id)
+        {
+            IQueryable<Passwords> BaseQuery = dbContext.Passwords;
+            IQueryable<Passwords> Qry_Linq = BaseQuery
+            .Where(var_password => var_password.Id == id)
+            .Select(var_password => PasswordEditInputModel.FromEntity(var_password))
+            .AsNoTracking();
+            var var_Password = await Qry_Linq.FirstOrDefaultAsync();
+            if (var_Password == null)
+            {
+                //logger.LogWarning("Password {id} not found", id);
+                throw new PasswordNotFoundException(id);
+            }
+            PasswordEditInputModel var_PasswordEditInputModel = new PasswordEditInputModel();
+            var_PasswordEditInputModel.Id               = var_Password.Id;
+            var_PasswordEditInputModel.Password         = var_Password.Password;
+            var_PasswordEditInputModel.Descrizione      = var_Password.Descrizione;
+            var_PasswordEditInputModel.DataInserimento  = var_Password.DataInserimento;
+            var_PasswordEditInputModel.FkUtente         = var_Password.FkUtente;
+            var_PasswordEditInputModel.Sito             = var_Password.Sito;
+            var_PasswordEditInputModel.Tipo             = var_Password.Tipo;
+            var_PasswordEditInputModel.PathFile         = var_Password.PathFile;
+            return var_PasswordEditInputModel;
+        }
+
+        public async Task<PasswordDetailViewModel> EditPasswordAsync(PasswordEditInputModel par_InputModel)
+        {
+            string sDescrizione = par_InputModel.Descrizione;
+            bool bPasswordNonDuplicata = await DescrizioneDuplicataAsync(sDescrizione);
+
+            if (bPasswordNonDuplicata == true)
+            {
+                Passwords var_Password = await dbContext.Passwords.FindAsync(par_InputModel.Id);
+                var_Password.ChangePassword(par_InputModel.Password);
+                var_Password.Descrizione = par_InputModel.Descrizione;
+                var_Password.DataInserimento = par_InputModel.DataInserimento;
+                var_Password.FkUtente = par_InputModel.FkUtente;
+                var_Password.Sito = par_InputModel.Sito;
+                var_Password.Tipo = par_InputModel.Tipo;
+                var_Password.PathFile = par_InputModel.PathFile;
+                await dbContext.SaveChangesAsync();
+
+                PasswordDetailViewModel var_PasswordDetailViewModel = PasswordDetailViewModel.FromEntity(var_Password);
+                return var_PasswordDetailViewModel;
+            }
+            else
+            {
+                throw new PasswordDescrizioneDuplicataException(sDescrizione, new Exception ("errore nella creazione della password"));
             }
         }
     }

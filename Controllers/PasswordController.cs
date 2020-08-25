@@ -71,5 +71,32 @@ namespace PasswordManager.Controllers
             return Json(var_Result);
         }
 
+        public async Task<IActionResult> Edit(string Id)
+        {
+            ViewData["Title"] = "Modifica Password";
+            PasswordEditInputModel var_InputModel = await prop_PasswordService.GetPasswordForEditingAsync(Convert.ToInt32(Id));
+            return View(var_InputModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(PasswordEditInputModel par_InputModel)
+        {
+            if (ModelState.IsValid == true)
+            {
+
+                try
+                {
+                    PasswordDetailViewModel var_Password = await prop_PasswordService.EditPasswordAsync(par_InputModel); 
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (PasswordDescrizioneDuplicataException)
+                {
+                    ModelState.AddModelError(nameof(PasswordDetailViewModel.Descrizione), "Questa Password gia esiste");
+                }
+            }
+            ViewData["Title"] = "Modifica Password";
+            return View(par_InputModel);
+        }
+
     }
 }
