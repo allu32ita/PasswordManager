@@ -85,7 +85,7 @@ namespace PasswordManager.Models.Services.Application
             string sDescrizione     = par_InputModel.Descrizione;
             string sDataInserimento = Convert.ToString(DateTime.Now);
 
-            bool bPasswordNonDuplicata = await DescrizioneDuplicataAsync(sDescrizione);
+            bool bPasswordNonDuplicata = await DescrizioneDuplicataAsync(sDescrizione, 0);
 
             if (bPasswordNonDuplicata == true)
             {
@@ -102,9 +102,9 @@ namespace PasswordManager.Models.Services.Application
             }
         }
 
-        public async Task<bool> DescrizioneDuplicataAsync(string par_Descrizione)
+        public async Task<bool> DescrizioneDuplicataAsync(string par_Descrizione, int par_Id)
         {
-            FormattableString query = $"SELECT COUNT(*) FROM Passwords where Descrizione = {par_Descrizione}; ";
+            FormattableString query = $"SELECT COUNT(*) FROM Passwords where Descrizione = {par_Descrizione} AND Id <> {par_Id}; ";
             DataSet var_DataSetCount = await db.QueryAsync(query);
             int iNumPasswordTrovate = Convert.ToInt32(var_DataSetCount.Tables[0].Rows[0][0]);
             if (iNumPasswordTrovate == 0)
@@ -135,7 +135,7 @@ namespace PasswordManager.Models.Services.Application
         public async Task<PasswordDetailViewModel> EditPasswordAsync(PasswordEditInputModel par_InputModel)
         {
             string sDescrizione         = par_InputModel.Descrizione;
-            bool bPasswordNonDuplicata  = await DescrizioneDuplicataAsync(sDescrizione);
+            bool bPasswordNonDuplicata  = await DescrizioneDuplicataAsync(sDescrizione, par_InputModel.Id);
             if (bPasswordNonDuplicata == true)
             {
                 DataSet var_Dataset = await db.QueryAsync($"UPDATE Passwords SET Password={par_InputModel.Password}, Descrizione={par_InputModel.Descrizione}, DataInserimento={par_InputModel.DataInserimento}, FkUtente={par_InputModel.FkUtente}, Sito={par_InputModel.Sito}, Tipo={par_InputModel.Tipo}, PathFile={par_InputModel.PathFile} WHERE Id={par_InputModel.Id}"); 

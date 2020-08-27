@@ -22,7 +22,7 @@ namespace PasswordManager.Models.InputModels
         [Required(ErrorMessage = "La Descrizione e' obbligatoria"), 
         MinLength(2, ErrorMessage = "La Descrizione dev'essere di almeno {1} caratteri"), 
         MaxLength(2000, ErrorMessage = "La Descrizione dev'essere di al massimo {1} caratteri"),
-        Remote(action: nameof(PasswordController.DescrizioneDuplicata), controller: "Password", ErrorMessage = "La Password esiste gia"),
+        Remote(action: nameof(PasswordController.DescrizioneDuplicata), controller: "Password", ErrorMessage = "La Password esiste gia", AdditionalFields = "Id"),
         Display(Name = "Descrizione")]
         public string Descrizione {get; set; }
 

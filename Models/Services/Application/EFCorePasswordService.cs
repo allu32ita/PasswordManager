@@ -131,7 +131,7 @@ namespace PasswordManager.Models.Services.Application
             string sDescrizione = par_InputModel.Descrizione;
             string sDataInserimento = Convert.ToString(DateTime.Now);
 
-            bool bPasswordNonDuplicata = await DescrizioneDuplicataAsync(sDescrizione);
+            bool bPasswordNonDuplicata = await DescrizioneDuplicataAsync(sDescrizione, 0);
 
             if (bPasswordNonDuplicata == true)
             {
@@ -151,11 +151,11 @@ namespace PasswordManager.Models.Services.Application
             }
         }
 
-        public async Task<bool> DescrizioneDuplicataAsync(string par_Descrizione)
+        public async Task<bool> DescrizioneDuplicataAsync(string par_Descrizione, int par_Id)
         {
             IQueryable<Passwords> BaseQuery = dbContext.Passwords;
             IQueryable<Passwords> Qry_listapsw = BaseQuery
-            .Where(Var_password => Var_password.Descrizione.Equals(par_Descrizione))
+            .Where(var_Password => var_Password.Descrizione.Equals(par_Descrizione) && var_Password.Id != par_Id)
             .AsNoTracking();
             int iNumPasswordTrovate = await Qry_listapsw.CountAsync();
 
@@ -197,7 +197,7 @@ namespace PasswordManager.Models.Services.Application
         public async Task<PasswordDetailViewModel> EditPasswordAsync(PasswordEditInputModel par_InputModel)
         {
             string sDescrizione = par_InputModel.Descrizione;
-            bool bPasswordNonDuplicata = await DescrizioneDuplicataAsync(sDescrizione);
+            bool bPasswordNonDuplicata = await DescrizioneDuplicataAsync(sDescrizione, par_InputModel.Id);
 
             if (bPasswordNonDuplicata == true)
             {

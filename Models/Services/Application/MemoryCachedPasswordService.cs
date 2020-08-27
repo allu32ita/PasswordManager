@@ -20,7 +20,7 @@ namespace PasswordManager.Models.Services.Application
 
         public Task<PasswordDetailViewModel> GetPasswordAsync(string id)
         {
-            return memoryChache.GetOrCreateAsync($"Password {id}", cacheEntry => {
+            return memoryChache.GetOrCreateAsync($"Password{id}", cacheEntry => {
                 cacheEntry.SetSize(1);
                 cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
                 return prop_PasswordService.GetPasswordAsync(id);
@@ -34,7 +34,7 @@ namespace PasswordManager.Models.Services.Application
             {
                 return memoryChache.GetOrCreateAsync($"Passwords{model.Page} = {model.Orderby} = {model.Ascending}", cacheEntry => {
                     cacheEntry.SetSize(2);
-                    cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(1));
+                    cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
                     return prop_PasswordService.GetPasswordsAsync(model);
                 });
             }
@@ -44,7 +44,7 @@ namespace PasswordManager.Models.Services.Application
         public Task<List<PasswordViewModel>> GetListUltimePasswordAsync()
         {
             return memoryChache.GetOrCreateAsync($"UltimePassword", cacheEntry => {
-                cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(1));
+                cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
                 return prop_PasswordService.GetListUltimePasswordAsync();
             });
         }
@@ -54,9 +54,9 @@ namespace PasswordManager.Models.Services.Application
             return prop_PasswordService.CreatePasswordAsync(par_InputModel);
         }
 
-        public Task<bool> DescrizioneDuplicataAsync(string par_Descrizione)
+        public Task<bool> DescrizioneDuplicataAsync(string par_Descrizione, int par_Id)
         {
-            return prop_PasswordService.DescrizioneDuplicataAsync(par_Descrizione);
+            return prop_PasswordService.DescrizioneDuplicataAsync(par_Descrizione, par_Id);
         }
 
         public Task<PasswordEditInputModel> GetPasswordForEditingAsync(int id)

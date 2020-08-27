@@ -2,10 +2,26 @@
 <section class="password-info">
     <div class="row">
         <div class="col-md-9">
-            @Model.Descrizione
+            <label>Id: @Model.Id</label>
         </div>
         <div class="col-md-3">
-            altre info
+            <a class="btn btn-outline-primary btn-sm" asp-action="Edit" asp-route-id="@Model.Id">Modifica</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <label>Descrizione: @Model.Descrizione</label>
+        </div>
+        <div class="col-md-3">
+            <label>Password: @Model.Password</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <label>Sito: @Model.Sito</label>
+        </div>
+        <div class="col-md-3">
+            <label>Tipo Password: @Model.Tipo</label>
         </div>
     </div>
 </section>

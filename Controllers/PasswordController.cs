@@ -30,7 +30,7 @@ namespace PasswordManager.Controllers
             return View(viewModel);
         }
 
-        public async Task<IActionResult> detail(string id)
+        public async Task<IActionResult> Detail(string id)
         {
             PasswordDetailViewModel Pass = await prop_PasswordService.GetPasswordAsync(id);
             ViewData["Title"] = "Dettaglio numero " + Pass.Id.ToString();
@@ -53,7 +53,10 @@ namespace PasswordManager.Controllers
                 try
                 {
                     PasswordDetailViewModel var_Password = await prop_PasswordService.CreatePasswordAsync(par_InputModel); 
-                    return RedirectToAction(nameof(Index));
+
+                    TempData["MessaggioConfermaSalvataggio"] = "Il record e stato creato, per inserire la password usare la funzione di modifica";
+
+                    return RedirectToAction(nameof(Edit), new { Id = var_Password.Id});
                 }
                 catch (PasswordDescrizioneDuplicataException)
                 {
@@ -65,9 +68,9 @@ namespace PasswordManager.Controllers
             return View(par_InputModel); 
         }
 
-        public async Task<IActionResult> DescrizioneDuplicata(string Descrizione)
+        public async Task<IActionResult> DescrizioneDuplicata(string Descrizione, int Id = 0)
         {
-            bool var_Result = await prop_PasswordService.DescrizioneDuplicataAsync(Descrizione);
+            bool var_Result = await prop_PasswordService.DescrizioneDuplicataAsync(Descrizione, Id);
             return Json(var_Result);
         }
 
@@ -83,11 +86,13 @@ namespace PasswordManager.Controllers
         {
             if (ModelState.IsValid == true)
             {
-
                 try
                 {
                     PasswordDetailViewModel var_Password = await prop_PasswordService.EditPasswordAsync(par_InputModel); 
-                    return RedirectToAction(nameof(Index));
+
+                    TempData["MessaggioConfermaSalvataggio"] = "I dati sono stati salvati con sussesso";
+
+                    return RedirectToAction(nameof(Detail), new { Id = par_InputModel.Id});
                 }
                 catch (PasswordDescrizioneDuplicataException)
                 {

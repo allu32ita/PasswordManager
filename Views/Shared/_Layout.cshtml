@@ -34,6 +34,12 @@
         </div>
     </nav>
     <div class="container"> 
+        @if (TempData["MessaggioConfermaSalvataggio"] != null)
+        {
+           <div class="alert alert-success alert-dismissable mt-3" role="alert">
+               @TempData["MessaggioConfermaSalvataggio"]
+           </div> 
+        }
         @RenderBody()
     </div>
     <footer>
