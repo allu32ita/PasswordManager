@@ -1,3 +1,5 @@
+using System.Runtime.Serialization;
+
 namespace PasswordManager.Models.Enums
 {
     public enum TipoPassword

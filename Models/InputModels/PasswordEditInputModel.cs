@@ -70,14 +70,14 @@ namespace PasswordManager.Models.InputModels
         public static Passwords FromEntity(Passwords par_password)
         {
             var var_password = new Passwords();
-            var_password.Id = par_password.Id;
+            var_password.Id                 = par_password.Id;
             var_password.ChangePassword(par_password.Password);
-            var_password.Descrizione = par_password.Descrizione;
-            var_password.DataInserimento = par_password.DataInserimento;
-            var_password.FkUtente = par_password.FkUtente;
-            var_password.Sito = par_password.Sito;
-            var_password.Tipo = par_password.Tipo;
-            var_password.PathFile = par_password.PathFile;
+            var_password.Descrizione        = par_password.Descrizione;
+            var_password.DataInserimento    = par_password.DataInserimento;
+            var_password.FkUtente           = par_password.FkUtente;
+            var_password.Sito               = par_password.Sito;
+            var_password.Tipo               = par_password.Tipo;
+            var_password.PathFile           = par_password.PathFile;
             return var_password;
         }
     }
