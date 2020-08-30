@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PasswordManager.Controllers;
 using PasswordManager.Models.Entities;
@@ -38,8 +39,11 @@ namespace PasswordManager.Models.InputModels
         [Display(Name = "Tipo")]
         public string Tipo {get; set; }
 
-        [Display(Name = "Nuova immagine...")]
+        [Display(Name = "File")]
         public string PathFile {get; set; }
+
+        [Display(Name = "Nuovo File...")]
+        public IFormFile Image {get; set; }
 
         //serve per fare validazioni complesse e restituire errori nel ModelState se non si vuole fare DataAnnotatio personalizzate
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
