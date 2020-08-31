@@ -19,9 +19,11 @@ namespace PasswordManager.Models.Services.Application
         private readonly ILogger<AdoNetPasswordService> log;
         private readonly PasswordDbContext dbContext;
         private readonly IOptionsMonitor<PasswordsOptions> OpzioniPassword;
+        private readonly IImagePersister par_ImagePersister;
 
-        public EFCorePasswordService(ILogger<AdoNetPasswordService> log, PasswordDbContext dbContext, IOptionsMonitor<PasswordsOptions> OpzioniPassword)
+        public EFCorePasswordService(ILogger<AdoNetPasswordService> log, PasswordDbContext dbContext, IImagePersister par_ImagePersister, IOptionsMonitor<PasswordsOptions> OpzioniPassword)
         {
+            this.par_ImagePersister = par_ImagePersister;
             this.OpzioniPassword = OpzioniPassword;
             this.log = log;
             this.dbContext = dbContext;
@@ -34,13 +36,13 @@ namespace PasswordManager.Models.Services.Application
             PasswordDetailViewModel pswdet = await dbContext.Passwords.Where(var_Password => var_Password.Id == int_ID)
                                                                       .Select(var_Password => new PasswordDetailViewModel
                                                                       {
-                                                                          Id                = var_Password.Id,
-                                                                          decrizioneEstesa  = "",
-                                                                          Descrizione       = var_Password.Descrizione,
-                                                                          Password          = var_Password.Password,
-                                                                          Sito              = var_Password.Sito,
-                                                                          Tipo              = var_Password.Tipo,
-                                                                          PathFile          = var_Password.PathFile
+                                                                          Id = var_Password.Id,
+                                                                          decrizioneEstesa = "",
+                                                                          Descrizione = var_Password.Descrizione,
+                                                                          Password = var_Password.Password,
+                                                                          Sito = var_Password.Sito,
+                                                                          Tipo = var_Password.Tipo,
+                                                                          PathFile = var_Password.PathFile
                                                                       }).SingleAsync();
             return pswdet;
         }
@@ -80,13 +82,13 @@ namespace PasswordManager.Models.Services.Application
                     {
                         BaseQuery = BaseQuery.OrderByDescending(Var_Password => Var_Password.Sito);
                     }
-                    break;     
+                    break;
             }
 
             IQueryable<Passwords> Qry_listapsw = BaseQuery
             .Where(Var_password => Var_password.Descrizione.Contains(model.Search))
             .AsNoTracking();
-            
+
             List<PasswordViewModel> listapsw = await Qry_listapsw
             .Skip(model.Offset)
             .Take(model.Limit)
@@ -119,7 +121,7 @@ namespace PasswordManager.Models.Services.Application
                 orderby: "Id",
                 ascending: false,
                 limit: (int)OpzioniPassword.CurrentValue.InHome,
-                orderPassword : OpzioniPassword.CurrentValue.Order
+                orderPassword: OpzioniPassword.CurrentValue.Order
             );
 
             ListViewModel<PasswordViewModel> List_PassViewModel = await GetPasswordsAsync(List_InputModel);
@@ -136,18 +138,18 @@ namespace PasswordManager.Models.Services.Application
             if (bPasswordNonDuplicata == true)
             {
                 var var_Password = new Passwords();
-                var_Password.Descrizione        = sDescrizione;
-                var_Password.DataInserimento    = sDataInserimento;
+                var_Password.Descrizione = sDescrizione;
+                var_Password.DataInserimento = sDataInserimento;
 
                 dbContext.Add(var_Password);
                 await dbContext.SaveChangesAsync();
-    
-                PasswordDetailViewModel var_DetailPassword = PasswordDetailViewModel.FromEntity(var_Password);        
+
+                PasswordDetailViewModel var_DetailPassword = PasswordDetailViewModel.FromEntity(var_Password);
                 return var_DetailPassword;
             }
             else
             {
-               throw new PasswordDescrizioneDuplicataException(sDescrizione, new Exception ("errore nella creazione della password"));
+                throw new PasswordDescrizioneDuplicataException(sDescrizione, new Exception("errore nella creazione della password"));
             }
         }
 
@@ -183,14 +185,14 @@ namespace PasswordManager.Models.Services.Application
                 throw new PasswordNotFoundException(id);
             }
             PasswordEditInputModel var_PasswordEditInputModel = new PasswordEditInputModel();
-            var_PasswordEditInputModel.Id               = var_Password.Id;
-            var_PasswordEditInputModel.Password         = var_Password.Password;
-            var_PasswordEditInputModel.Descrizione      = var_Password.Descrizione;
-            var_PasswordEditInputModel.DataInserimento  = var_Password.DataInserimento;
-            var_PasswordEditInputModel.FkUtente         = var_Password.FkUtente;
-            var_PasswordEditInputModel.Sito             = var_Password.Sito;
-            var_PasswordEditInputModel.Tipo             = var_Password.Tipo;
-            var_PasswordEditInputModel.PathFile         = var_Password.PathFile;
+            var_PasswordEditInputModel.Id = var_Password.Id;
+            var_PasswordEditInputModel.Password = var_Password.Password;
+            var_PasswordEditInputModel.Descrizione = var_Password.Descrizione;
+            var_PasswordEditInputModel.DataInserimento = var_Password.DataInserimento;
+            var_PasswordEditInputModel.FkUtente = var_Password.FkUtente;
+            var_PasswordEditInputModel.Sito = var_Password.Sito;
+            var_PasswordEditInputModel.Tipo = var_Password.Tipo;
+            var_PasswordEditInputModel.PathFile = var_Password.PathFile;
             return var_PasswordEditInputModel;
         }
 
@@ -208,7 +210,8 @@ namespace PasswordManager.Models.Services.Application
                 var_Password.FkUtente = par_InputModel.FkUtente;
                 var_Password.Sito = par_InputModel.Sito;
                 var_Password.Tipo = par_InputModel.Tipo;
-                var_Password.PathFile = par_InputModel.PathFile;
+                string sFilePath = await par_ImagePersister.SavePasswordFileAsync(par_InputModel.Id, par_InputModel.FilePassword);
+                var_Password.PathFile = sFilePath;
                 await dbContext.SaveChangesAsync();
 
                 PasswordDetailViewModel var_PasswordDetailViewModel = PasswordDetailViewModel.FromEntity(var_Password);
@@ -216,7 +219,7 @@ namespace PasswordManager.Models.Services.Application
             }
             else
             {
-                throw new PasswordDescrizioneDuplicataException(sDescrizione, new Exception ("errore nella creazione della password"));
+                throw new PasswordDescrizioneDuplicataException(sDescrizione, new Exception("errore nella creazione della password"));
             }
         }
     }

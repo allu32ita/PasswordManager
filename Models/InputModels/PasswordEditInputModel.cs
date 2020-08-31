@@ -43,7 +43,7 @@ namespace PasswordManager.Models.InputModels
         public string PathFile {get; set; }
 
         [Display(Name = "Nuovo File...")]
-        public IFormFile Image {get; set; }
+        public IFormFile FilePassword {get; set; }
 
         //serve per fare validazioni complesse e restituire errori nel ModelState se non si vuole fare DataAnnotatio personalizzate
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

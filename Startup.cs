@@ -46,6 +46,7 @@ namespace PasswordManager
             //services.AddTransient<IPasswordService, EFCorePasswordService>();
             services.AddTransient<IDatabaseAccessor, SqLiteDatabaseAccessor>();
             services.AddTransient<ICachedPasswordService, MemoryCachedPasswordService>(); 
+            services.AddSingleton<IImagePersister, InsecureImagePersister>();
             
             
             //services.AddTransient<ICachedPasswordService, DistributedCachePasswordService>(); 
