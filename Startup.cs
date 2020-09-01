@@ -18,6 +18,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Hosting;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace PasswordManager
 {
@@ -46,7 +47,7 @@ namespace PasswordManager
             //services.AddTransient<IPasswordService, EFCorePasswordService>();
             services.AddTransient<IDatabaseAccessor, SqLiteDatabaseAccessor>();
             services.AddTransient<ICachedPasswordService, MemoryCachedPasswordService>(); 
-            services.AddSingleton<IImagePersister, InsecureImagePersister>();
+            services.AddSingleton<IImagePersister, MagickNetImagePersister>();
             
             
             //services.AddTransient<ICachedPasswordService, DistributedCachePasswordService>(); 
@@ -61,12 +62,11 @@ namespace PasswordManager
             //    Configuration.Bind("DistributedCache:SqlServer", options);
             //});
 
-            services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));
-
             //Options
+            services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));
             services.Configure<PasswordsOptions>(Configuration.GetSection("Passwords"));
             services.Configure<ConnectionStringsOptions>(Configuration.GetSection("ConnectionStrings"));
-            
+            services.Configure<KestrelServerOptions>(Configuration.GetSection("Kestrel"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

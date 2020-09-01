@@ -54,10 +54,14 @@
                     </div>
                     <div class="form-group">
                         <label asp-for="PathFile"></label>
-                        <img id="preview" src="@Model.PathFile" class="img-fluid">
+                        <div class="preview-container">
+                            <img id="preview" src="@Model.PathFile" asp-append-version="true">
+                        </div>
                         <div class="custom-file mt-3">
                            <input type="file" class="custom-file-input" asp-for="FilePassword" onchange="updatePreview(this)">
                            <label class="custom-file-label" asp-for="FilePassword"></label> 
+                           <span asp-validation-for="FilePassword"></span>
+                           <p><small>L'immagine verra' ritagliata quadrata</small></p>
                         </div>
                     </div>
                 </aside>

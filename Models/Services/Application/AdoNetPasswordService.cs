@@ -150,8 +150,15 @@ namespace PasswordManager.Models.Services.Application
                 
                 if (par_InputModel.FilePassword != null)
                 {
-                    string sFilePath = await par_ImagePersister.SavePasswordFileAsync(par_InputModel.Id, par_InputModel.FilePassword);
-                    DataSet var_Dataset2 = await db.QueryAsync($"UPDATE Passwords SET PathFile={sFilePath} WHERE Id={par_InputModel.Id}");
+                    try
+                    {
+                        string sFilePath = await par_ImagePersister.SavePasswordImageAsync(par_InputModel.Id, par_InputModel.FilePassword);
+                        DataSet var_Dataset2 = await db.QueryAsync($"UPDATE Passwords SET PathFile={sFilePath} WHERE Id={par_InputModel.Id}"); 
+                    }
+                    catch (System.Exception exc)
+                    {
+                        throw new PasswordImageInvalidException(par_InputModel.Id, exc);
+                    }
                 }
                 
                 PasswordDetailViewModel var_Password = await GetPasswordAsync(par_InputModel.Id.ToString());

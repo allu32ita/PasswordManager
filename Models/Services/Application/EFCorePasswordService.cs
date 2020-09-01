@@ -210,8 +210,19 @@ namespace PasswordManager.Models.Services.Application
                 var_Password.FkUtente = par_InputModel.FkUtente;
                 var_Password.Sito = par_InputModel.Sito;
                 var_Password.Tipo = par_InputModel.Tipo;
-                string sFilePath = await par_ImagePersister.SavePasswordFileAsync(par_InputModel.Id, par_InputModel.FilePassword);
-                var_Password.PathFile = sFilePath;
+
+                if (par_InputModel.FilePassword != null)
+                {
+                    try
+                    {
+                        string sFilePath = await par_ImagePersister.SavePasswordImageAsync(par_InputModel.Id, par_InputModel.FilePassword);
+                        var_Password.PathFile = sFilePath;    
+                    }
+                    catch (System.Exception exc)
+                    {
+                        throw new PasswordImageInvalidException(par_InputModel.Id, exc);
+                    }
+                }
                 await dbContext.SaveChangesAsync();
 
                 PasswordDetailViewModel var_PasswordDetailViewModel = PasswordDetailViewModel.FromEntity(var_Password);

@@ -94,9 +94,13 @@ namespace PasswordManager.Controllers
 
                     return RedirectToAction(nameof(Detail), new { Id = par_InputModel.Id});
                 }
+                catch (PasswordImageInvalidException) 
+                {
+                    ModelState.AddModelError(nameof(PasswordEditInputModel.FilePassword), "Questa Password gia esiste");
+                }
                 catch (PasswordDescrizioneDuplicataException)
                 {
-                    ModelState.AddModelError(nameof(PasswordDetailViewModel.Descrizione), "Questa Password gia esiste");
+                    ModelState.AddModelError(nameof(PasswordEditInputModel.Descrizione), "Questa Password gia esiste");
                 }
             }
             ViewData["Title"] = "Modifica Password";
