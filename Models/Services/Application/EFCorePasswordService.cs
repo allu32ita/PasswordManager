@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PasswordManager.Models.InputModels;
 using PasswordManager.Models.Exceptions;
+using System.Data;
 
 namespace PasswordManager.Models.Services.Application
 {
@@ -34,16 +35,7 @@ namespace PasswordManager.Models.Services.Application
             log.LogInformation("password {id} requested", id);
             int int_ID = Convert.ToInt32(id);
             PasswordDetailViewModel pswdet = await dbContext.Passwords.Where(var_Password => var_Password.Id == int_ID)
-                                                                      .Select(var_Password => new PasswordDetailViewModel
-                                                                      {
-                                                                          Id = var_Password.Id,
-                                                                          decrizioneEstesa = "",
-                                                                          Descrizione = var_Password.Descrizione,
-                                                                          Password = var_Password.Password,
-                                                                          Sito = var_Password.Sito,
-                                                                          Tipo = var_Password.Tipo,
-                                                                          PathFile = var_Password.PathFile
-                                                                      }).SingleAsync();
+                                                                      .Select(var_Password => PasswordDetailViewModel.FromEntity(var_Password)).SingleAsync();
             return pswdet;
         }
 
@@ -92,14 +84,7 @@ namespace PasswordManager.Models.Services.Application
             List<PasswordViewModel> listapsw = await Qry_listapsw
             .Skip(model.Offset)
             .Take(model.Limit)
-            .Select(Var_password => new PasswordViewModel
-            {
-                Id = Var_password.Id,
-                Descrizione = Var_password.Descrizione,
-                Password = Var_password.Password,
-                Sito = Var_password.Sito,
-                Tipo = Var_password.Tipo
-            })
+            .Select(var_Password => PasswordViewModel.FromEntity(var_Password))
             .ToListAsync();
 
             int totalCount = await Qry_listapsw.CountAsync();
@@ -173,27 +158,18 @@ namespace PasswordManager.Models.Services.Application
 
         public async Task<PasswordEditInputModel> GetPasswordForEditingAsync(int id)
         {
-            IQueryable<Passwords> BaseQuery = dbContext.Passwords;
-            IQueryable<Passwords> Qry_Linq = BaseQuery
+            IQueryable<PasswordEditInputModel> Qry_Linq = dbContext.Passwords
             .Where(var_password => var_password.Id == id)
             .Select(var_password => PasswordEditInputModel.FromEntity(var_password))
             .AsNoTracking();
-            var var_Password = await Qry_Linq.FirstOrDefaultAsync();
+            PasswordEditInputModel var_Password = await Qry_Linq.FirstOrDefaultAsync();
             if (var_Password == null)
             {
                 //logger.LogWarning("Password {id} not found", id);
                 throw new PasswordNotFoundException(id);
             }
-            PasswordEditInputModel var_PasswordEditInputModel = new PasswordEditInputModel();
-            var_PasswordEditInputModel.Id = var_Password.Id;
-            var_PasswordEditInputModel.Password = var_Password.Password;
-            var_PasswordEditInputModel.Descrizione = var_Password.Descrizione;
-            var_PasswordEditInputModel.DataInserimento = var_Password.DataInserimento;
-            var_PasswordEditInputModel.FkUtente = var_Password.FkUtente;
-            var_PasswordEditInputModel.Sito = var_Password.Sito;
-            var_PasswordEditInputModel.Tipo = var_Password.Tipo;
-            var_PasswordEditInputModel.PathFile = var_Password.PathFile;
-            return var_PasswordEditInputModel;
+
+            return var_Password;
         }
 
         public async Task<PasswordDetailViewModel> EditPasswordAsync(PasswordEditInputModel par_InputModel)
@@ -211,6 +187,8 @@ namespace PasswordManager.Models.Services.Application
                 var_Password.Sito = par_InputModel.Sito;
                 var_Password.Tipo = par_InputModel.Tipo;
 
+                dbContext.Entry(var_Password).Property(var_Password => var_Password.RowVersion).OriginalValue = par_InputModel.RowVersion;
+
                 if (par_InputModel.FilePassword != null)
                 {
                     try
@@ -223,8 +201,15 @@ namespace PasswordManager.Models.Services.Application
                         throw new PasswordImageInvalidException(par_InputModel.Id, exc);
                     }
                 }
-                await dbContext.SaveChangesAsync();
 
+                try
+                {
+                   await dbContext.SaveChangesAsync(); 
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    throw new DBConcurrencyException("Non e' possibile effettuare l'update perche un altro utente ha effettuato delle modifiche.");
+                }
                 PasswordDetailViewModel var_PasswordDetailViewModel = PasswordDetailViewModel.FromEntity(var_Password);
                 return var_PasswordDetailViewModel;
             }

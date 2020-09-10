@@ -36,7 +36,7 @@ namespace PasswordManager.Models.Services.Application
             var dtable = dset.Tables[0];
             if (dtable.Rows.Count != 1)
             {
-                log.LogWarning("password {id} requested", id);
+                log.LogWarning("password {id} not found", id);
                 throw new PasswordNotFoundException(Convert.ToInt32(id));
             }
             var PassRow = dtable.Rows[0];
@@ -92,9 +92,8 @@ namespace PasswordManager.Models.Services.Application
             if (bPasswordNonDuplicata == true)
             {
                 PasswordDetailViewModel var_Password;
-                var var_DataSet = await db.QueryAsync($@"INSERT INTO Passwords (Descrizione, DataInserimento) VALUES ({sDescrizione}, {sDataInserimento});
+                string sId = await db.QueryScalarAsync<string>($@"INSERT INTO Passwords (Descrizione, DataInserimento) VALUES ({sDescrizione}, {sDataInserimento});
                                                      SELECT last_insert_rowid();");
-                string sId = Convert.ToString(var_DataSet.Tables[0].Rows[0][0]);
                 var_Password = await GetPasswordAsync(sId);
                 return var_Password;
             }
@@ -106,8 +105,7 @@ namespace PasswordManager.Models.Services.Application
 
         public async Task<bool> DescrizioneDuplicataAsync(string par_Descrizione, int par_Id)
         {
-            DataSet var_DataSetCount = await db.QueryAsync($"SELECT COUNT(*) FROM Passwords where Descrizione = {par_Descrizione} AND Id <> {par_Id}");
-            int iNumPasswordTrovate = Convert.ToInt32(var_DataSetCount.Tables[0].Rows[0][0]);
+            int iNumPasswordTrovate = await db.QueryScalarAsync<int>($"SELECT COUNT(*) FROM Passwords where Descrizione = {par_Descrizione} AND Id <> {par_Id}");
             if (iNumPasswordTrovate == 0)
             {
                 return true;
@@ -120,7 +118,7 @@ namespace PasswordManager.Models.Services.Application
 
         public async Task<PasswordEditInputModel> GetPasswordForEditingAsync(int id)
         {
-            FormattableString query = $"SELECT Id, Password, Descrizione, DataInserimento, FkUtente, Sito, Tipo, PathFile  FROM Passwords where Id = {id}; ";
+            FormattableString query = $"SELECT Id, Password, Descrizione, DataInserimento, FkUtente, Sito, Tipo, PathFile, RowVersion FROM Passwords where Id = {id}; ";
             DataSet var_DataSet = await db.QueryAsync(query);
             var var_PasswordTable = var_DataSet.Tables[0];
             if (var_PasswordTable.Rows.Count != 1)
@@ -135,40 +133,47 @@ namespace PasswordManager.Models.Services.Application
 
         public async Task<PasswordDetailViewModel> EditPasswordAsync(PasswordEditInputModel par_InputModel)
         {
-            DataSet var_DataSetCount = await db.QueryAsync($"SELECT COUNT(*) FROM Passwords where Id = {par_InputModel.Id}");
-            int iNumPasswordTrovate = Convert.ToInt32(var_DataSetCount.Tables[0].Rows[0][0]);
-            if (iNumPasswordTrovate == 0)
+            bool bPasswordNonDuplicata = await DescrizioneDuplicataAsync(par_InputModel.Descrizione, par_InputModel.Id);
+            if (bPasswordNonDuplicata == false)
             {
-                throw new PasswordNotFoundException(par_InputModel.Id);
+                throw new PasswordDescrizioneDuplicataException(par_InputModel.Descrizione, new Exception("errore nella creazione della password"));
             }
-
-            string sDescrizione = par_InputModel.Descrizione;
-            bool bPasswordNonDuplicata = await DescrizioneDuplicataAsync(sDescrizione, par_InputModel.Id);
-            if (bPasswordNonDuplicata == true)
+            string sFilePath = null;
+            if (par_InputModel.FilePassword != null)
             {
-                DataSet var_Dataset = await db.QueryAsync($"UPDATE Passwords SET Password={par_InputModel.Password}, Descrizione={par_InputModel.Descrizione}, DataInserimento={par_InputModel.DataInserimento}, FkUtente={par_InputModel.FkUtente}, Sito={par_InputModel.Sito}, Tipo={par_InputModel.Tipo}, PathFile={par_InputModel.PathFile} WHERE Id={par_InputModel.Id}");
-                
-                if (par_InputModel.FilePassword != null)
+                try
                 {
-                    try
-                    {
-                        string sFilePath = await par_ImagePersister.SavePasswordImageAsync(par_InputModel.Id, par_InputModel.FilePassword);
-                        DataSet var_Dataset2 = await db.QueryAsync($"UPDATE Passwords SET PathFile={sFilePath} WHERE Id={par_InputModel.Id}"); 
-                    }
-                    catch (System.Exception exc)
-                    {
-                        throw new PasswordImageInvalidException(par_InputModel.Id, exc);
-                    }
+                    sFilePath   = await par_ImagePersister.SavePasswordImageAsync(par_InputModel.Id, par_InputModel.FilePassword);
                 }
-                
-                PasswordDetailViewModel var_Password = await GetPasswordAsync(par_InputModel.Id.ToString());
-                return var_Password;
+                catch (System.Exception exc)
+                {
+                    throw new PasswordImageInvalidException(par_InputModel.Id, exc);
+                }
             }
-            else
+            int var_NumRigheUpd = await db.CommandAsync($@"UPDATE Passwords 
+                                                        SET PathFile=COALESCE({sFilePath}, PathFile), 
+                                                        Password={par_InputModel.Password}, 
+                                                        Descrizione={par_InputModel.Descrizione}, 
+                                                        DataInserimento={par_InputModel.DataInserimento}, 
+                                                        FkUtente={par_InputModel.FkUtente}, 
+                                                        Sito={par_InputModel.Sito}, 
+                                                        Tipo={par_InputModel.Tipo} 
+                                                        WHERE Id={par_InputModel.Id} AND RowVersion={par_InputModel.RowVersion}");
+            if (var_NumRigheUpd == 0)
             {
-                throw new PasswordDescrizioneDuplicataException(sDescrizione, new Exception("errore nella creazione della password"));
+                int var_RecordTrovato = await db.QueryScalarAsync<int>($"SELECT COUNT(*) FROM Passwords WHERE Id={par_InputModel.Id}");
+                if (var_RecordTrovato > 0)
+                {
+                    throw new DBConcurrencyException("Non e' possibile effettuare l'update perche un altro utente ha effettuato delle modifiche.");
+                }
+                else
+                {
+                    throw new PasswordNotFoundException(par_InputModel.Id);  
+                }
+                 
             }
-
+            PasswordDetailViewModel var_Password = await GetPasswordAsync(par_InputModel.Id.ToString());
+            return var_Password;
         }
     }
 }

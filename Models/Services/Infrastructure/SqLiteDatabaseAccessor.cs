@@ -14,20 +14,60 @@ namespace PasswordManager.Models.Services.Infrastructure
     public class SqLiteDatabaseAccessor : IDatabaseAccessor
     {
         private readonly ILogger<SqLiteDatabaseAccessor> log;
-
         public IOptionsMonitor<ConnectionStringsOptions> OpzioniDiConnessione { get; }
         public SqLiteDatabaseAccessor(ILogger<SqLiteDatabaseAccessor> log, IOptionsMonitor<ConnectionStringsOptions> OpzioniDiConnessione)
         {
             this.log = log;
             this.OpzioniDiConnessione = OpzioniDiConnessione;
         }
-
-
-        public async Task<DataSet> QueryAsync(FormattableString formatquery)
+        public async Task<int> CommandAsync(FormattableString par_Formatcommand)
         {
-            log.LogInformation(formatquery.Format, formatquery.GetArguments());
-            
-            var queryArg = formatquery.GetArguments();
+            try
+            {
+                using SqliteConnection conn = await GetOpenedConnection();
+                using SqliteCommand cmd     = GetCommand(par_Formatcommand, conn);
+                int var_NumRigheUpd = await cmd.ExecuteNonQueryAsync();
+                return var_NumRigheUpd;
+            }
+            catch (System.Exception exc)
+            {
+                throw new ConstraintException($"Eccezzione su CommandAsync, comando: {par_Formatcommand}", exc);
+            }
+        }
+        public async Task<T> QueryScalarAsync<T>(FormattableString par_Formatcommand)
+        {
+            try
+            {
+                using SqliteConnection conn = await GetOpenedConnection();
+                using SqliteCommand cmd     = GetCommand(par_Formatcommand, conn);
+                object var_Risultato = await cmd.ExecuteScalarAsync();
+                return (T)Convert.ChangeType(var_Risultato, typeof(T));
+            }
+            catch (System.Exception exc)
+            {
+                throw new ConstraintException($"Eccezzione su CommandAsync, comando: {par_Formatcommand}", exc);
+            }
+        }
+
+        public async Task<DataSet> QueryAsync(FormattableString par_Formatquery)
+        {
+            log.LogInformation(par_Formatquery.Format, par_Formatquery.GetArguments());     
+            using SqliteConnection conn = await GetOpenedConnection();
+            using SqliteCommand cmd     = GetCommand(par_Formatquery, conn);
+            using var reader = await cmd.ExecuteReaderAsync();
+            var dset = new DataSet();
+            do
+            {
+                var dtable = new DataTable();
+                dset.Tables.Add(dtable);
+                dtable.Load(reader);
+            } while (!reader.IsClosed);
+            return dset;
+        }
+
+        private static SqliteCommand GetCommand(FormattableString par_Formatquery, SqliteConnection conn)
+        {
+            var queryArg = par_Formatquery.GetArguments();
             var sqliteParam = new List<SqliteParameter>();
             for (int i = 0; i < queryArg.Length; i++)
             {
@@ -35,37 +75,33 @@ namespace PasswordManager.Models.Services.Infrastructure
                 {
                     continue;
                 }
-                var param = new SqliteParameter(i.ToString(), queryArg[i]);
+                SqliteParameter param;
+                if (queryArg[i] == null)
+                {
+                    param = new SqliteParameter(i.ToString(), DBNull.Value);
+                }
+                else
+                {
+                    param = new SqliteParameter(i.ToString(), queryArg[i]);
+                }
                 sqliteParam.Add(param);
                 queryArg[i] = "@" + i;
             }
-            string query = formatquery.ToString();
-
-            var ConnectionString = OpzioniDiConnessione.CurrentValue.Default;
-            using (var conn = new SqliteConnection(ConnectionString))
-            {
-                await conn.OpenAsync();
-                using (var cmd = new SqliteCommand(query, conn))
-                {
-                    cmd.Parameters.AddRange(sqliteParam);
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        var dset = new DataSet();
-                        dset.EnforceConstraints = false;
-                        do
-                        {
-                            var dtable = new DataTable();
-                            dset.Tables.Add(dtable);
-                            dtable.Load(reader);
-                        } while (!reader.IsClosed);
-                        return dset;
-                    }
-                }
-            }
+            string query = par_Formatquery.ToString();
+            var cmd = new SqliteCommand(query, conn);
+            cmd.Parameters.AddRange(sqliteParam);
+            return cmd;
         }
 
+        private async Task<SqliteConnection> GetOpenedConnection()
+        {
+            var conn = new SqliteConnection(OpzioniDiConnessione.CurrentValue.Default);
+            await conn.OpenAsync();
+            return conn;
+        }
 
+        
 
-
+        
     }
 }

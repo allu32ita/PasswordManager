@@ -45,6 +45,8 @@ namespace PasswordManager.Models.InputModels
         [Display(Name = "Nuovo File...")]
         public IFormFile FilePassword {get; set; }
 
+        public int RowVersion {get; set; }
+
         //serve per fare validazioni complesse e restituire errori nel ModelState se non si vuole fare DataAnnotatio personalizzate
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
@@ -68,20 +70,22 @@ namespace PasswordManager.Models.InputModels
             var_PasswordEditInputModel.Sito = var_PasswordRow["Sito"].ToString();
             var_PasswordEditInputModel.Tipo = var_PasswordRow["Tipo"].ToString();
             var_PasswordEditInputModel.PathFile = var_PasswordRow["PathFile"].ToString();
+            var_PasswordEditInputModel.RowVersion = Convert.ToInt32(var_PasswordRow["RowVersion"]);
             return var_PasswordEditInputModel;
         }
 
-        public static Passwords FromEntity(Passwords par_password)
+        public static PasswordEditInputModel FromEntity(Passwords par_password)
         {
-            var var_password = new Passwords();
+            var var_password = new PasswordEditInputModel();
             var_password.Id                 = par_password.Id;
-            var_password.ChangePassword(par_password.Password);
+            var_password.Password           = par_password.Password;
             var_password.Descrizione        = par_password.Descrizione;
             var_password.DataInserimento    = par_password.DataInserimento;
             var_password.FkUtente           = par_password.FkUtente;
             var_password.Sito               = par_password.Sito;
             var_password.Tipo               = par_password.Tipo;
             var_password.PathFile           = par_password.PathFile;
+            var_password.RowVersion         = par_password.RowVersion;
             return var_password;
         }
     }

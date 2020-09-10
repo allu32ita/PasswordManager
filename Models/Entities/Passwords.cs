@@ -13,6 +13,7 @@ namespace PasswordManager.Models.Entities
         public string Sito { get; set; }
         public string Tipo { get; set; }
         public string PathFile {get; set; }
+        public int RowVersion {get; set; }
 
         public void ChangePassword(string par_Password)
         {

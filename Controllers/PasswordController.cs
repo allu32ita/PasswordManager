@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PasswordManager.Models.Exceptions;
@@ -101,6 +102,10 @@ namespace PasswordManager.Controllers
                 catch (PasswordDescrizioneDuplicataException)
                 {
                     ModelState.AddModelError(nameof(PasswordEditInputModel.Descrizione), "Questa Password gia esiste");
+                }
+                catch (DBConcurrencyException)
+                {
+                    ModelState.AddModelError("", "Spiacenti il salvataggio non e' andato a buon fine perche nel frattempo perche un altro utente ha aggiornato il corso. aggiornare la pagine e ripetere le modifiche.");
                 }
             }
             ViewData["Title"] = "Modifica Password";

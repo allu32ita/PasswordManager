@@ -34,5 +34,17 @@ namespace PasswordManager.Models.ViewModels
             };
             return PswdViewModel;
         }
+
+        public static PasswordViewModel FromEntity(Passwords par_Password)
+        {
+            PasswordViewModel var_Password = new PasswordViewModel();
+            var_Password.Id             = par_Password.Id;
+            var_Password.Descrizione    = par_Password.Descrizione;
+            var_Password.Password       = par_Password.Password;
+            var_Password.Sito           = par_Password.Sito;
+            var_Password.Tipo           = par_Password.Tipo;
+            var_Password.PathFile       = par_Password.PathFile;
+            return var_Password;
+        }
     }
 }

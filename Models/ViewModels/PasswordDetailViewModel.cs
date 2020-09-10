@@ -4,11 +4,27 @@ using PasswordManager.Models.Entities;
 
 namespace PasswordManager.Models.ViewModels
 {
-    public class PasswordDetailViewModel : PasswordViewModel
+    public class PasswordDetailViewModel
     {
+        public int Id {get; set;}
+
+        public string Password {get; set;}
+
+        public string Descrizione {get; set;}
+
+        public string DataInserimento {get; set;}
+
+        public int FkUtente {get; set;}
+
+        public string Sito {get;set;}
+
+        public string Tipo {get; set;}
+
+        public string PathFile {get; set; }
+        
         public string decrizioneEstesa { get; set; }
 
-        public static new PasswordDetailViewModel FromDataRow(DataRow passRow)
+        public static PasswordDetailViewModel FromDataRow(DataRow passRow)
         {
             var var_PasswordDetail = new PasswordDetailViewModel();
             var_PasswordDetail.Id              = Convert.ToInt32(passRow["Id"]);
@@ -29,7 +45,7 @@ namespace PasswordManager.Models.ViewModels
 
         public static PasswordDetailViewModel FromEntity(Passwords par_Password)
         {
-            var var_PasswordDetailViewModel = new PasswordDetailViewModel();
+            PasswordDetailViewModel var_PasswordDetailViewModel = new PasswordDetailViewModel();
             var_PasswordDetailViewModel.Id              = par_Password.Id;
             var_PasswordDetailViewModel.Password        = par_Password.Password;
             var_PasswordDetailViewModel.Descrizione     = par_Password.Descrizione;
