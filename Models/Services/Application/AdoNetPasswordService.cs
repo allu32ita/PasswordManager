@@ -175,5 +175,14 @@ namespace PasswordManager.Models.Services.Application
             PasswordDetailViewModel var_Password = await GetPasswordAsync(par_InputModel.Id.ToString());
             return var_Password;
         }
+
+        public async Task DeletePasswordAsync(PasswordDeleteInputModel par_InputModel)
+        {
+            int var_RecordCancellati = await db.CommandAsync($"DELETE FROM Passwords WHERE Id={par_InputModel.Id}");
+            if (var_RecordCancellati == 0)
+            {
+                throw new PasswordNotFoundException(par_InputModel.Id);
+            }
+        }
     }
 }

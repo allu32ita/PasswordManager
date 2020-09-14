@@ -125,6 +125,7 @@ namespace PasswordManager.Models.Services.Application
                 var var_Password = new Passwords();
                 var_Password.Descrizione = sDescrizione;
                 var_Password.DataInserimento = sDataInserimento;
+                var_Password.FkUtente = 0;
 
                 dbContext.Add(var_Password);
                 await dbContext.SaveChangesAsync();
@@ -217,6 +218,17 @@ namespace PasswordManager.Models.Services.Application
             {
                 throw new PasswordDescrizioneDuplicataException(sDescrizione, new Exception("errore nella creazione della password"));
             }
+        }
+
+        public async Task DeletePasswordAsync(PasswordDeleteInputModel par_InputModel)
+        {
+            Passwords var_Password = await dbContext.Passwords.FindAsync(par_InputModel.Id);
+            if (var_Password == null)
+            {
+                throw new PasswordNotFoundException(par_InputModel.Id);
+            }
+            dbContext.Remove(var_Password);
+            await dbContext.SaveChangesAsync();
         }
     }
 }

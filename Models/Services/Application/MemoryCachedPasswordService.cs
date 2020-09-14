@@ -70,5 +70,12 @@ namespace PasswordManager.Models.Services.Application
             memoryChache.Remove($"Password{par_InputModel.Id}");
             return var_Password;
         }
+
+        public async Task DeletePasswordAsync(PasswordDeleteInputModel par_InputModel)
+        {
+            await prop_PasswordService.DeletePasswordAsync(par_InputModel);
+            memoryChache.Remove($"Password{par_InputModel.Id}");
+            memoryChache.Remove($"UltimePassword");
+        }
     }
 }

@@ -112,5 +112,12 @@ namespace PasswordManager.Controllers
             return View(par_InputModel);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Delete(PasswordDeleteInputModel par_InputModel)
+        {
+            await prop_PasswordService.DeletePasswordAsync(par_InputModel);
+            TempData["MessaggioConfermaSalvataggio"] = "I dati sono stati eliminati";
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
