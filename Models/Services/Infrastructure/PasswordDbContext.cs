@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PasswordManager.Models.Entities;
 
 namespace PasswordManager.Models.Services.Infrastructure
@@ -23,10 +24,8 @@ namespace PasswordManager.Models.Services.Infrastructure
             {
                 entity.ToTable("Passwords");
                 entity.HasKey(Passwords => Passwords.Id);
-                entity.HasIndex(e => e.Id)
-                    .IsUnique();
+                entity.HasIndex(e => e.Id).IsUnique();
                 entity.Property(Passwords => Passwords.RowVersion).IsRowVersion();
-
                 //entity.Property(e => e.Id).ValueGeneratedNever();   questo dice che non deve usare la sua proprieta autoincrementale nel database
             });
         }
