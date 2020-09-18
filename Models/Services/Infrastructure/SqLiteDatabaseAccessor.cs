@@ -23,7 +23,7 @@ namespace PasswordManager.Models.Services.Infrastructure
         public async Task<int> CommandAsync(FormattableString par_Formatcommand)
         {
             try
-            {
+            { 
                 using SqliteConnection conn = await GetOpenedConnection();
                 using SqliteCommand cmd     = GetCommand(par_Formatcommand, conn);
                 int var_NumRigheUpd = await cmd.ExecuteNonQueryAsync();

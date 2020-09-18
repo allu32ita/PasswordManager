@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -6,7 +7,7 @@ using PasswordManager.Models.Entities;
 
 namespace PasswordManager.Models.Services.Infrastructure
 {
-    public partial class PasswordDbContext : DbContext
+    public partial class PasswordDbContext : IdentityDbContext
     {
 
         public PasswordDbContext(DbContextOptions<PasswordDbContext> options)
@@ -18,8 +19,8 @@ namespace PasswordManager.Models.Services.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
-
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.HasAnnotation("ProductVersion", "2.2.4-servicing-10062");
             modelBuilder.Entity<Passwords>(entity =>
             {
                 entity.ToTable("Passwords");

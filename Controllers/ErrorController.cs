@@ -21,7 +21,6 @@ namespace PasswordManager.Controllers
                     ViewData["Title"] = "Errore";
                     return View();
             }
-
             
         }
     }

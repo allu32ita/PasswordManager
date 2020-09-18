@@ -19,6 +19,7 @@ using Microsoft.Extensions.Hosting;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Identity;
 
 namespace PasswordManager
 {
@@ -35,6 +36,7 @@ namespace PasswordManager
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddResponseCaching();
+            services.AddRazorPages();
             services.AddMvc(options => {
                 var HomeProfile = new CacheProfile();
                 //HomeProfile.Duration = Configuration.GetValue<int>("ResponseCache:Home:Duration");
@@ -43,25 +45,22 @@ namespace PasswordManager
                 Configuration.Bind("ResponseCache:Home", HomeProfile);
                 options.CacheProfiles.Add("Home", HomeProfile);
             }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            
+            //ado net
             //services.AddTransient<IPasswordService, AdoNetPasswordService>();
+            //services.AddTransient<IDatabaseAccessor, SqLiteDatabaseAccessor>();
+
+            //ef core
+            services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<PasswordDbContext>();
             services.AddTransient<IPasswordService, EFCorePasswordService>();
-            services.AddTransient<IDatabaseAccessor, SqLiteDatabaseAccessor>();
-            services.AddTransient<ICachedPasswordService, MemoryCachedPasswordService>(); 
-            services.AddSingleton<IImagePersister, MagickNetImagePersister>();
-            
-            
-            //services.AddTransient<ICachedPasswordService, DistributedCachePasswordService>(); 
-            
             services.AddDbContextPool<PasswordDbContext>(optionsBuilder => {
                 String ConnectionString = Configuration.GetSection("ConnectionStrings").GetValue<String>("Default");
                 optionsBuilder.UseSqlite(ConnectionString);
             });
+
+            services.AddTransient<ICachedPasswordService, MemoryCachedPasswordService>(); 
+            services.AddSingleton<IImagePersister, MagickNetImagePersister>();
             
-
-            //services.AddDistributedSqlServerCache(options => {
-            //    Configuration.Bind("DistributedCache:SqlServer", options);
-            //});
-
             //Options
             services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));
             services.Configure<PasswordsOptions>(Configuration.GetSection("Passwords"));
@@ -89,11 +88,15 @@ namespace PasswordManager
             //endpoint routing middleware
             app.UseRouting();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseResponseCaching();
 
             //usare endpoint middleware
             app.UseEndpoints(routeBuilder => {
                 routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                routeBuilder.MapRazorPages();
             });
         }
     }
