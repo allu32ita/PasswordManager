@@ -22,15 +22,13 @@
         <div id="navmain" class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" asp-action="index" asp-controller="home">Home<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" asp-action="index" asp-controller="home">Home</a>
                 </li>
                 <li class="nav-item active">
-                    <a class="nav-link" href="#">Login<span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" asp-action="index" asp-controller="Password">Lista Password<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" asp-action="index" asp-controller="Password">Lista Password</a>
                 </li>
             </ul>
+            <partial name="_LoginPartial"></partial>
         </div>
     </nav>
     <div class="container"> 
