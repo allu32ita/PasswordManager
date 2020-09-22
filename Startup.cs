@@ -20,6 +20,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Identity;
+using PasswordManager.Customizations.Identity;
 
 namespace PasswordManager
 {
@@ -51,7 +52,17 @@ namespace PasswordManager
             //services.AddTransient<IDatabaseAccessor, SqLiteDatabaseAccessor>();
 
             //ef core
-            services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<PasswordDbContext>();
+            services.AddDefaultIdentity<IdentityUser>(var_Options => {
+                var_Options.Password.RequireDigit           = true;
+                var_Options.Password.RequiredLength         = 8;
+                var_Options.Password.RequireUppercase       = true;
+                var_Options.Password.RequireLowercase       = true;
+                var_Options.Password.RequireNonAlphanumeric = true;
+                var_Options.Password.RequiredUniqueChars    = 4;
+            })
+            .AddPasswordValidator<CommonPasswordValidator<IdentityUser>>()
+            .AddEntityFrameworkStores<PasswordDbContext>();
+
             services.AddTransient<IPasswordService, EFCorePasswordService>();
             services.AddDbContextPool<PasswordDbContext>(optionsBuilder => {
                 String ConnectionString = Configuration.GetSection("ConnectionStrings").GetValue<String>("Default");
