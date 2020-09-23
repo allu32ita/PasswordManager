@@ -1,0 +1,9 @@
+dotnet tool install --global dotnet-outdated
+
+uso
+
+per verifica update pacchetti nuget
+dotnet outdated
+
+per installazione aggiornamenti
+dotnet outdated -u

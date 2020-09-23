@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Identity;
 using PasswordManager.Customizations.Identity;
+using PasswordManager.Models.Entities;
 
 namespace PasswordManager
 {
@@ -52,7 +53,7 @@ namespace PasswordManager
             //services.AddTransient<IDatabaseAccessor, SqLiteDatabaseAccessor>();
 
             //ef core
-            services.AddDefaultIdentity<IdentityUser>(var_Options => {
+            services.AddDefaultIdentity<ApplicationUser>(var_Options => {
                 var_Options.Password.RequireDigit           = true;
                 var_Options.Password.RequiredLength         = 8;
                 var_Options.Password.RequireUppercase       = true;
@@ -60,7 +61,7 @@ namespace PasswordManager
                 var_Options.Password.RequireNonAlphanumeric = true;
                 var_Options.Password.RequiredUniqueChars    = 4;
             })
-            .AddPasswordValidator<CommonPasswordValidator<IdentityUser>>()
+            .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>()
             .AddEntityFrameworkStores<PasswordDbContext>();
 
             services.AddTransient<IPasswordService, EFCorePasswordService>();

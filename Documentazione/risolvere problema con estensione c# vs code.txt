@@ -1,0 +1,9 @@
+C:\Users\aluig\.omnisharp
+
+creare file omnisharp.json
+
+{
+	"MSBuild": {
+		"UseLegacySdkResolver": true
+	}
+}

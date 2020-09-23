@@ -1,4 +1,4 @@
-@inject SignInManager<IdentityUser> var_SignInManager
+@inject SignInManager<ApplicationUser> var_SignInManager
 
 @if (var_SignInManager.IsSignedIn(User) == true)
 {

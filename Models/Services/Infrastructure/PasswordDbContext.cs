@@ -7,7 +7,7 @@ using PasswordManager.Models.Entities;
 
 namespace PasswordManager.Models.Services.Infrastructure
 {
-    public partial class PasswordDbContext : IdentityDbContext
+    public partial class PasswordDbContext : IdentityDbContext<ApplicationUser>
     {
 
         public PasswordDbContext(DbContextOptions<PasswordDbContext> options)

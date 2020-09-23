@@ -1,0 +1,10 @@
+con powershell come amministratore avviare
+https://chocolatey.org/install
+Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+
+come amministratore avviare
+choco install redis-64
+
+installare redis come servizio di windows
+redis-server --service-install
