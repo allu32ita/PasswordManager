@@ -10,8 +10,8 @@ namespace PasswordManager.Controllers
     //[ResponseCache(CacheProfileName = "Home")]
     public class homeController : Controller
     {
-        [ResponseCache(CacheProfileName = "Home")]
-        public async Task<IActionResult> index([FromServices] ICachedPasswordService passwordService)
+        //[ResponseCache(CacheProfileName = "Home")]
+        public async Task<IActionResult> Index([FromServices] ICachedPasswordService passwordService)
         {
             ViewData["Title"] = "Home";
             List<PasswordViewModel> List_UltimePassword = await passwordService.GetListUltimePasswordAsync();

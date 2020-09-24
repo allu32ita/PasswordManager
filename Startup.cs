@@ -61,6 +61,7 @@ namespace PasswordManager
                 var_Options.Password.RequireNonAlphanumeric = true;
                 var_Options.Password.RequiredUniqueChars    = 4;
             })
+            .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
             .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>()
             .AddEntityFrameworkStores<PasswordDbContext>();
 

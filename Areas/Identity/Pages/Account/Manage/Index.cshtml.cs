@@ -33,6 +33,9 @@ namespace PasswordManager.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
+            [Display(Name = "Full Name")]
+            public string FullName { get; set; }
+
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
@@ -40,6 +43,7 @@ namespace PasswordManager.Areas.Identity.Pages.Account.Manage
 
         private async Task LoadAsync(ApplicationUser user)
         {
+            var var_FullName = user.FullName;
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
@@ -47,6 +51,7 @@ namespace PasswordManager.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
+                FullName = var_FullName,
                 PhoneNumber = phoneNumber
             };
         }
@@ -75,6 +80,14 @@ namespace PasswordManager.Areas.Identity.Pages.Account.Manage
             {
                 await LoadAsync(user);
                 return Page();
+            }
+
+            user.FullName = Input.FullName;
+            var var_IdentityResult = await _userManager.UpdateAsync(user);
+            if (var_IdentityResult.Succeeded == false)
+            {
+                StatusMessage = "Unexpected error when trying to set full name.";
+                return RedirectToPage();    
             }
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
