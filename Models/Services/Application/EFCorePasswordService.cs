@@ -12,6 +12,8 @@ using Microsoft.Extensions.Options;
 using PasswordManager.Models.InputModels;
 using PasswordManager.Models.Exceptions;
 using System.Data;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace PasswordManager.Models.Services.Application
 {
@@ -20,12 +22,18 @@ namespace PasswordManager.Models.Services.Application
         private readonly ILogger<AdoNetPasswordService> log;
         private readonly PasswordDbContext dbContext;
         private readonly IOptionsMonitor<PasswordsOptions> OpzioniPassword;
+        private readonly IHttpContextAccessor par_HttpContextAccessor;
         private readonly IImagePersister par_ImagePersister;
 
-        public EFCorePasswordService(ILogger<AdoNetPasswordService> log, PasswordDbContext dbContext, IImagePersister par_ImagePersister, IOptionsMonitor<PasswordsOptions> OpzioniPassword)
+        public EFCorePasswordService(ILogger<AdoNetPasswordService> log, 
+                                    PasswordDbContext dbContext, 
+                                    IImagePersister par_ImagePersister, 
+                                    IOptionsMonitor<PasswordsOptions> OpzioniPassword,
+                                    IHttpContextAccessor par_HttpContextAccessor)
         {
             this.par_ImagePersister = par_ImagePersister;
             this.OpzioniPassword = OpzioniPassword;
+            this.par_HttpContextAccessor = par_HttpContextAccessor;
             this.log = log;
             this.dbContext = dbContext;
         }
@@ -117,6 +125,16 @@ namespace PasswordManager.Models.Services.Application
         {
             string sDescrizione = par_InputModel.Descrizione;
             string sDataInserimento = Convert.ToString(DateTime.Now);
+            string sFkUtente;
+
+            try
+            {
+                sFkUtente = par_HttpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            }
+            catch (NullReferenceException)
+            {
+                throw new Exception("E' necessario un utente per effettuare questa operazione.");
+            }
 
             bool bPasswordNonDuplicata = await DescrizioneDuplicataAsync(sDescrizione, 0);
 
@@ -125,7 +143,7 @@ namespace PasswordManager.Models.Services.Application
                 var var_Password = new Passwords();
                 var_Password.Descrizione = sDescrizione;
                 var_Password.DataInserimento = sDataInserimento;
-                var_Password.FkUtente = 0;
+                var_Password.FkUtente = sFkUtente;
 
                 dbContext.Add(var_Password);
                 await dbContext.SaveChangesAsync();

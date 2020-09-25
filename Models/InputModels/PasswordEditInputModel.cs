@@ -31,7 +31,7 @@ namespace PasswordManager.Models.InputModels
         public string DataInserimento {get; set; }
 
         [Display(Name = "Utente loggato")]
-        public int FkUtente {get; set; } 
+        public string FkUtente {get; set; } 
 
         [Display(Name = "Sito Web")]
         public string Sito {get; set; }
@@ -63,10 +63,7 @@ namespace PasswordManager.Models.InputModels
             var_PasswordEditInputModel.Password     = var_PasswordRow["Password"].ToString();
             var_PasswordEditInputModel.Descrizione  = var_PasswordRow["Descrizione"].ToString();
             var_PasswordEditInputModel.DataInserimento = var_PasswordRow["DataInserimento"].ToString();
-            if (var_PasswordRow["FkUtente"].ToString() != "")    //va in errore perche non riesce a convertire un DataRow con valore nullo in intero
-            {
-                var_PasswordEditInputModel.FkUtente = Convert.ToInt32(var_PasswordRow["FkUtente"]);    
-            }
+            var_PasswordEditInputModel.FkUtente = var_PasswordRow["FkUtente"].ToString();    
             var_PasswordEditInputModel.Sito = var_PasswordRow["Sito"].ToString();
             var_PasswordEditInputModel.Tipo = var_PasswordRow["Tipo"].ToString();
             var_PasswordEditInputModel.PathFile = var_PasswordRow["PathFile"].ToString();

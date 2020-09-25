@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Identity;
 using PasswordManager.Customizations.Identity;
 using PasswordManager.Models.Entities;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace PasswordManager
 {
@@ -60,6 +61,7 @@ namespace PasswordManager
                 var_Options.Password.RequireLowercase       = true;
                 var_Options.Password.RequireNonAlphanumeric = true;
                 var_Options.Password.RequiredUniqueChars    = 4;
+                var_Options.SignIn.RequireConfirmedAccount  = true;
             })
             .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
             .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>()
@@ -73,6 +75,7 @@ namespace PasswordManager
 
             services.AddTransient<ICachedPasswordService, MemoryCachedPasswordService>(); 
             services.AddSingleton<IImagePersister, MagickNetImagePersister>();
+            services.AddSingleton<IEmailSender, MailKitEmailSender>();
             
             //Options
             services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));

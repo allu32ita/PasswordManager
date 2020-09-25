@@ -27,6 +27,10 @@ namespace PasswordManager.Models.Services.Infrastructure
                 entity.HasKey(Passwords => Passwords.Id);
                 entity.HasIndex(e => e.Id).IsUnique();
                 entity.Property(Passwords => Passwords.RowVersion).IsRowVersion();
+
+                entity.HasOne(Passwords => Passwords.Tab_AspNetUsers)
+                            .WithMany(var_User => var_User.Tab_Passwords)
+                            .HasForeignKey(Passwords => Passwords.FkUtente);
                 //entity.Property(e => e.Id).ValueGeneratedNever();   questo dice che non deve usare la sua proprieta autoincrementale nel database
             });
         }

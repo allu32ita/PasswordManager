@@ -14,7 +14,7 @@ namespace PasswordManager.Models.ViewModels
 
         public string DataInserimento {get; set;}
 
-        public int FkUtente {get; set;}
+        public string FkUtente {get; set;}
 
         public string Sito {get;set;}
 
@@ -31,10 +31,7 @@ namespace PasswordManager.Models.ViewModels
             var_PasswordDetail.Password        = passRow["Password"].ToString();
             var_PasswordDetail.Descrizione     = Convert.ToString(passRow["Descrizione"]);
             var_PasswordDetail.DataInserimento = passRow["DataInserimento"].ToString();
-            if (passRow["FkUtente"].ToString() != "")    //va in errore perche non riesce a convertire un DataRow con valore nullo in intero
-            {
-                var_PasswordDetail.FkUtente        = Convert.ToInt32(passRow["FkUtente"]);    
-            }
+            var_PasswordDetail.FkUtente        = passRow["FkUtente"].ToString();   
             var_PasswordDetail.Sito            = passRow["Sito"].ToString();
             var_PasswordDetail.Tipo            = passRow["Tipo"].ToString();
             var_PasswordDetail.decrizioneEstesa = passRow["Descrizione"].ToString() + passRow["Sito"].ToString();
