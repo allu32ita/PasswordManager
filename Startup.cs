@@ -50,6 +50,8 @@ namespace PasswordManager
             //services.AddTransient<IPasswordService, AdoNetPasswordService>();
             //services.AddTransient<IDatabaseAccessor, SqLiteDatabaseAccessor>();
 
+            //provadddddddddddddddddddddd
+
             //ef core
             services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<PasswordDbContext>();
             services.AddTransient<IPasswordService, EFCorePasswordService>();
@@ -60,7 +62,6 @@ namespace PasswordManager
 
             services.AddTransient<ICachedPasswordService, MemoryCachedPasswordService>(); 
             services.AddSingleton<IImagePersister, MagickNetImagePersister>();
-            
             //Options
             services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));
             services.Configure<PasswordsOptions>(Configuration.GetSection("Passwords"));
