@@ -24,6 +24,7 @@ namespace PasswordManager
             Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(Var_webHostBuilder => {
                 Var_webHostBuilder.UseStartup<Startup>();
+                //Var_webHostBuilder.UseUrls("http://aluigiandrea.ddns.net:5000"); per farlo andare su un host o ip diverso dal default che e localhost
             //.ConfigureServices  per configurare la DI di una applicazione console configurare i servizi qui e non ho piu la Startup.cs
             });
     }
